@@ -7,6 +7,6 @@ dist/
 
 .agent
 .cursor
-.github/copilot_instructions.md
+.github/copilot-instructions.md
 CLAUDE.MD
 AGENTS.MD
