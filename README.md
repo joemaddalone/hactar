@@ -6,9 +6,7 @@
 
 </div>
 
-
 Hactar is a lightweight Node.js CLI for gathering and visualising storage information from Plex Media Server libraries. It lets you quickly see which shows, seasons, movies or entire libraries consume the most disk space, so you can clean up or archive files with confidence.
-
 
 <img width="694" height="584" alt="Image" src="https://github.com/user-attachments/assets/f06717f8-0619-412a-8497-1ab9e5e633d3" />
 
@@ -23,7 +21,7 @@ Hactar is a lightweight Node.js CLI for gathering and visualising storage inform
 Install Hactar globally using npm:
 
 ```bash
-npm install -g hactar
+npm install -g hactar-cli
 ```
 
 That's it! You can now use the `hactar` command from anywhere in your terminal.
