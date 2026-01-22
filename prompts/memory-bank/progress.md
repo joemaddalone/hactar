@@ -22,6 +22,8 @@
 - **Music Library Support**: Implement scanning for music libraries (currently only supports movies and TV shows).
 - **Advanced Analytics**: Additional storage insights like duplicate detection, format analysis, and growth trends.
 - **CLI Polish**: ✅ Help command descriptions updated to match README - program descriptions now accurately reflect functionality.
+- **NPM Publishing**: ✅ Package.json configured with bin field, files array, proper description, and main entry point for CLI publishing.
+- **Documentation**: ✅ README updated to focus on npm install -g flow with separate Contributing section for developers.
 - **Enhanced Error Handling**: Handle more edge cases in API responses and network issues.
 - **Configuration Validation**: Add validation for Plex server URLs and token formats.
 

@@ -1,7 +1,7 @@
 {
 	"name": "hactar",
 	"version": "1.0.0",
-	"description": "",
+	"description": "A lightweight Node.js CLI for gathering and visualising storage information from Plex Media Server libraries",
 	"homepage": "https://github.com/joemaddalone/hactar#readme",
 	"bugs": {
 		"url": "https://github.com/joemaddalone/hactar/issues"
@@ -13,7 +13,14 @@
 	"license": "ISC",
 	"author": "Joe Maddalone",
 	"type": "commonjs",
-	"main": "index.js",
+	"main": "dist/index.js",
+	"bin": {
+		"hactar": "dist/index.js"
+	},
+	"files": [
+		"dist",
+		"README.md"
+	],
 	"scripts": {
 		"build": "tsc",
 		"dev": "tsc --watch",

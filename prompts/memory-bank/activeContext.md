@@ -16,6 +16,8 @@
 - **User-Friendly Configuration**: Added interactive configuration prompts when scan or dashboard commands are run without proper setup.
 - **Improved Error Handling**: Enhanced user experience with helpful configuration offers instead of basic error messages.
 - **Help Command Refactoring**: Updated all command descriptions to accurately reflect actual usage as described in README, including banner description change from "get plex stats" to "Plex Library Management".
+- **NPM Publishing Preparation**: Updated package.json with bin field, files array, proper description, and corrected main entry point for CLI tool publishing.
+- **README Update**: Refocused README on npm install -g flow for end users, moved development setup to Contributing section.
 
 ## Next Steps
 

@@ -20,32 +20,13 @@ Hactar is a lightweight Node.js CLI for gathering and visualising storage inform
 
 ## 🚀 Getting Started
 
-```bash
-# 1. Clone the repository
-git clone https://github.com/joemaddalone/hactar.git
-cd hactar
-
-# 2. Install dependencies
-npm install
-
-# 3. Build the TypeScript sources
-npm run build
-```
-
-After building, the compiled JavaScript lives in `dist/`. You can run the CLI directly using Node:
+Install Hactar globally using npm:
 
 ```bash
-node dist/index.js <command>
+npm install -g hactar
 ```
 
-Or, if you have `npx` available, you can execute the binary without the `node` prefix:
-
-```bash
-npx hactar <command>
-```
-
-> **Tip** – If you want to use Hactar as a global command, run
-> `npm install -g .` from the root of the repo after building.
+That's it! You can now use the `hactar` command from anywhere in your terminal.
 
 ## 📌 Core Commands
 
@@ -72,13 +53,51 @@ The configuration is persisted in `~/.hactar/config.json`. If the file is missin
 
 ```bash
 # Configure first
-npx hactar configure
+hactar configure
 
 # Scan all libraries (you’ll pick one when prompted)
-npx hactar scan
+hactar scan
 
 # Launch the dashboard for interactive exploration
-npx hactar dashboard
+hactar dashboard
 ```
 
 **Happy cleaning!**
+
+## 🤝 Contributing
+
+Want to contribute to Hactar? Here's how to set up a development environment:
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/joemaddalone/hactar.git
+cd hactar
+
+# 2. Install dependencies
+npm install
+
+# 3. Build the TypeScript sources
+npm run build
+
+# 4. Run commands during development
+node dist/index.js <command>
+
+# Or start development mode (auto-rebuild on changes)
+npm run dev
+```
+
+### Development Scripts
+
+- `npm run build` - Compile TypeScript to JavaScript
+- `npm run dev` - Watch mode for development
+- `npm run start` - Run the compiled CLI
+- `npm run lint` - Check code style
+- `npm run format` - Format code with Biome
+
+### Project Structure
+
+- `src/` - TypeScript source code
+- `dist/` - Compiled JavaScript output
+- `src/commands/` - CLI command implementations
+- `src/client/` - Plex API client and utilities
+- `src/types/` - TypeScript type definitions
