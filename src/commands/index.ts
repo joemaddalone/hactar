@@ -22,8 +22,6 @@ export class CommandRegistry {
       .name("hactar")
       .description("Scan Plex libraries and retrieve comprehensive data")
       .version(packageJson.version)
-      .option("-d, --debug", "Enable debug mode")
-      .option("-v, --verbose", "Enable verbose output");
   }
 
   private registerCommands(): void {
