@@ -9,7 +9,7 @@
 - **Enhanced TUI Dashboard**: Complete multi-panel terminal interface with library selection, storage metrics, and **paginated/sortable tabular data display**.
 - **Pagination System**: 20-item pages with keyboard navigation (arrow keys, home/end, A/D keys).
 - **Sorting Functionality**: Sort by title, size, files, and library (overall view) with ascending/descending options.
-- **Interactive Controls**: Number keys (1-4) for column sorting, R key to reverse sort direction.
+- **Interactive Controls**: Number keys (1-3) for column sorting, R key to reverse sort direction.
 - **Visual Feedback**: Sort indicators in table headers and detailed status information.
 - **User-Friendly Configuration**: Interactive configuration prompts when commands are run without proper setup.
 - **Improved Error Handling**: Enhanced user experience with helpful configuration offers instead of basic error messages.

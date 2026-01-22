@@ -548,7 +548,7 @@ export class DashboardCommand extends BaseCommand {
 			"",
 			"Controls:",
 			"←/→ or A/D: Navigate pages | Home/End or G/G: First/Last page",
-			"1-4: Sort by column | R: Reverse sort direction | Q: Quit",
+			"1-3: Sort by column | R: Reverse sort direction | Q: Quit",
 		];
 
 		this.statusLog.setContent(status.join("\n"));
