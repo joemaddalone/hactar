@@ -112,13 +112,13 @@ export class DashboardCommand extends BaseCommand {
 			}
 		});
 
-		this.screen.key(["home", "g"], () => {
+		this.screen.key(["home", "w"], () => {
 			this.currentPage = 1;
 			this.refreshItemsTable();
 			this.updateStatusLog();
 		});
 
-		this.screen.key(["end", "G"], () => {
+		this.screen.key(["end", "s"], () => {
 			this.currentPage = Math.ceil(this.totalItems / this.itemsPerPage);
 			this.refreshItemsTable();
 			this.updateStatusLog();
@@ -547,7 +547,7 @@ export class DashboardCommand extends BaseCommand {
 			`Sort: ${this.currentSortColumn} (${this.sortDirection})`,
 			"",
 			"Controls:",
-			"←/→ or A/D: Navigate pages | Home/End or G/G: First/Last page",
+			"←/→ or A/D: Navigate pages | Home/End or W/S: First/Last page",
 			"1-3: Sort by column | R: Reverse sort direction | Q: Quit",
 		];
 
