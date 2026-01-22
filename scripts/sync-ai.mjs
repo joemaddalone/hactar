@@ -1,9 +1,18 @@
 #!/usr/bin/env node
 
-import fs from "node:fs";
+import fs from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const platforms = [
+	{
+		id: "copilot",
+		name: "GitHub Copilot",
+		targetPath: ".github/copilot-instructions.md",
+		dirPath: ".github",
+		useSourceFilename: false,
+		selected: true,
+	},
 	{
 		id: "windsurf",
 		name: "Windsurf",
@@ -49,13 +58,6 @@ const platforms = [
 		selected: false,
 	},
 	{
-		id: "agentforce",
-		name: "Agentforce Vibes",
-		dirPath: ".a4drules",
-		useSourceFilename: true,
-		selected: false,
-	},
-	{
 		id: "continue",
 		name: "Continue",
 		dirPath: ".continue",
@@ -79,99 +81,99 @@ const platforms = [
 	},
 ];
 
-import { fileURLToPath } from "node:url";
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
 const rootPath = path.resolve(__dirname, "..");
+const sourcePath = path.join(rootPath, "prompts/instructions.md");
 
-function showResults(results) {
-	console.log(`\n=== Results ===\n`);
-	results.forEach((result) => {
-		console.log(`  ${result}`);
-	});
+const exists = async (p) => {
+	try {
+		await fs.access(p);
+		return true;
+	} catch {
+		return false;
+	}
+};
+
+const ensureDir = async (dir) => {
+	await fs.mkdir(dir, { recursive: true });
+};
+
+const linkOrCopy = async (src, dest) => {
+	try {
+		await fs.link(src, dest);
+	} catch (err) {
+		// Cross-device link or other restrictions; fallback to copy
+		if (err.code === "EXDEV" || err.code === "EPERM" || err.code === "EACCES") {
+			await fs.copyFile(src, dest);
+			return;
+		}
+		throw err;
+	}
+};
+
+const formatTarget = (platform) => {
+	if (platform.useSourceFilename)
+		return path.join(platform.dirPath, path.basename(sourcePath));
+	return platform.targetPath || `${platform.id.toUpperCase()}.MD`;
+};
+
+const syncPlatform = async (platform) => {
+	const targetPath = formatTarget(platform);
+	const targetFull = path.join(rootPath, targetPath);
+	try {
+		if (await exists(targetFull)) await fs.unlink(targetFull);
+		if (platform.dirPath)
+			await ensureDir(path.join(rootPath, platform.dirPath));
+		await linkOrCopy(sourcePath, targetFull);
+		return { ok: true, name: platform.name, target: targetPath };
+	} catch (err) {
+		return {
+			ok: false,
+			name: platform.name,
+			target: targetPath,
+			error: err.message,
+		};
+	}
+};
+
+const showResults = (results) => {
+	console.log("\n=== Results ===\n");
+	for (const r of results) {
+		if (r.ok) console.log(`  ✅ ${r.name}: ${r.target}`);
+		else console.log(`  ❌ ${r.name}: ${r.error}`);
+	}
 	console.log("");
-}
+};
 
-async function syncFiles() {
-	const sourceFullPath = path.join(rootPath, "prompts/instructions.md");
-
-	if (!fs.existsSync(sourceFullPath)) {
+const syncFiles = async () => {
+	if (!(await exists(sourcePath))) {
 		console.error(`[ERROR] Source file not found: prompts/instructions.md`);
 		process.exit(1);
 	}
 
-	const selectedPlatforms = platforms.filter((p) => p.selected);
-
-	if (selectedPlatforms.length === 0) {
-		console.log(`[!] No platforms selected. Exiting.`);
+	const selected = platforms.filter((p) => p.selected);
+	if (selected.length === 0) {
+		console.log("[!] No platforms selected. Exiting.");
 		return;
 	}
 
-	const results = [];
-	let successCount = 0;
-
-	for (const platform of selectedPlatforms) {
-		try {
-			// Determine target path based on platform configuration
-			// Some platforms use a fixed filename (e.g., CLAUDE.MD)
-			// Others use the source filename in a directory (e.g., .windsurf/rules/<source>)
-			const targetPath = platform.useSourceFilename
-				? path.join(platform.dirPath, path.basename(sourceFullPath))
-				: platform.targetPath;
-			const targetFullPath = path.join(rootPath, targetPath);
-
-			// Delete existing target file if present
-			// This breaks the old hard link (if any) before creating a new one
-			if (fs.existsSync(targetFullPath)) {
-				fs.unlinkSync(targetFullPath);
-			}
-
-			// Create target directory if needed (e.g., .windsurf/rules/)
-			if (platform.dirPath) {
-				const dirFullPath = path.join(rootPath, platform.dirPath);
-				if (!fs.existsSync(dirFullPath)) {
-					fs.mkdirSync(dirFullPath, { recursive: true });
-				}
-			}
-
-			// Create hard link: both source and target now point to the same inode
-			// This is NOT a copy - they share the same file content on disk
-			fs.linkSync(sourceFullPath, targetFullPath);
-			successCount++;
-			results.push(`[OK] ${platform.name}: ${targetPath}`);
-		} catch (error) {
-			results.push(`[FAIL] ${platform.name}: ${error.message}`);
-		}
-	}
-
+	const tasks = selected.map((p) => syncPlatform(p));
+	const results = await Promise.all(tasks);
 	showResults(results);
-	console.log(
-		`Synced to ${successCount}/${selectedPlatforms.length} platform(s)`,
-	);
-}
+	const successCount = results.filter((r) => r.ok).length;
+	console.log(`Synced to ${successCount}/${selected.length} platform(s)`);
+};
 
-/**
- * Main entry point
- *
- * Process:
- * 1. Parse command-line argument for source file (or use default)
- * 2. Validate source file exists
- * 3. Launch interactive platform selection
- * 4. Selected platforms are synced via hard links
- */
-async function main() {
-	// Validate source file exists before launching interactive menu
-	const sourceFullPath = path.join(rootPath, "prompts/instructions.md");
-	if (!fs.existsSync(sourceFullPath)) {
+const main = async () => {
+	if (!(await exists(sourcePath))) {
 		console.error(`[ERROR] Source file not found: prompts/instructions.md\n`);
 		process.exit(1);
 	}
-
-	// Launch interactive platform selection and sync
 	await syncFiles();
-}
+};
 
-// Execute main function and catch any unhandled errors
-main().catch(console.error);
+main().catch((err) => {
+	console.error(err);
+	process.exit(1);
+});
