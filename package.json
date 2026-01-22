@@ -1,5 +1,5 @@
 {
-	"name": "hactar",
+	"name": "hactar-cli",
 	"version": "1.0.0",
 	"description": "A lightweight Node.js CLI for gathering and visualising storage information from Plex Media Server libraries",
 	"homepage": "https://github.com/joemaddalone/hactar#readme",
