@@ -12,7 +12,6 @@ export class StorageClient {
 	private getConfigDirectory(): string {
 		const homeDir = os.homedir();
 		const storageDir = Filets.joinPaths(homeDir, ".hactar", "storage");
-		// Ensure config directory exists
 		Filets.ensureDirectoryExists(storageDir);
 		return storageDir;
 	}
@@ -24,7 +23,6 @@ export class StorageClient {
 		const saved = data;
 
 		try {
-			// Write config file
 			Filets.writeTextFile(
 				`${this.storageDir}/${library}.json`,
 				JSON.stringify(saved),

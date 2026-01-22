@@ -19,7 +19,6 @@ export class ScanCommand extends BaseCommand {
 		this.logInfo("Scanning for libraries...");
 		const plexClient = new PlexClient();
 
-		// Check if we have credentials
 		const isConfigured = await plexClient.testConnection();
 		if (!isConfigured) {
 			await this.offerConfiguration();
@@ -28,12 +27,6 @@ export class ScanCommand extends BaseCommand {
 
 		const libraries = await plexClient.getLibraries();
 		await this.displayLibraries(libraries, plexClient);
-
-		// const selectedLibrary = libraries[answer.selectedLibrary];
-		// this.logInfo(`Scanning library: ${selectedLibrary.title}`);
-		// const results = await plexClient.getLibraryItems(selectedLibrary.key);
-		// this.logInfo(`Found ${results.length} items`);
-		// this.logResults(results.map((result) => result.title).join('\n'));
 	}
 
 	protected async displayLibraries(

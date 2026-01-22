@@ -4,7 +4,7 @@
 
 - Hactar is a fully functional CLI tool for Plex media server storage analysis.
 - All core features are implemented and working: configuration, connection testing, library scanning, and TUI dashboard.
-- The project is in a stable, production-ready state with enhanced dashboard features.
+- The project is in a stable, production-ready state with enhanced dashboard features and accurate documentation.
 
 ## Recent Changes
 
@@ -15,11 +15,12 @@
 - **Performance Optimization**: Efficient data handling with proper state management for large libraries.
 - **User-Friendly Configuration**: Added interactive configuration prompts when scan or dashboard commands are run without proper setup.
 - **Improved Error Handling**: Enhanced user experience with helpful configuration offers instead of basic error messages.
+- **Help Command Refactoring**: Updated all command descriptions to accurately reflect actual usage as described in README, including banner description change from "get plex stats" to "Plex Library Management".
 
 ## Next Steps
 
-- Potential enhancements: music library support, advanced analytics, CLI polishing.
-- Address minor documentation issues (TMDB reference in command description).
+- Potential enhancements: music library support, advanced analytics.
+- ✅ CLI polishing completed - help command descriptions now accurately reflect usage.
 - Consider additional features based on user feedback.
 
 ## Active Decisions and Considerations

@@ -12,7 +12,6 @@ import type {
   LibraryScanResult,
 } from "../types";
 import ora from "ora";
-// import { Logger } from "./logger";
 import { ConfigManager } from "./configure";
 import { bytesToHuman } from "../utils/bytes";
 
@@ -37,7 +36,6 @@ export class PlexClient {
       await configManager.loadConfig();
       const credentials = await configManager.getCredentials();
       if (!credentials?.token || !credentials.serverUrl) {
-        // Logger.warning("Plex credentials not found, please run configure");
         return;
       }
       this.token = credentials.token;
@@ -67,7 +65,6 @@ export class PlexClient {
       });
 
       if (!response.ok) {
-        // throw new Error(`Plex API error: ${response.status} ${response.statusText}`);
         return {
           error: `Plex API error: ${response.status} ${response.statusText}`,
         } as T;

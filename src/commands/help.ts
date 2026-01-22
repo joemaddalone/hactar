@@ -41,24 +41,38 @@ export class HelpCommand extends BaseCommand {
 	private async showGeneralHelp(): Promise<void> {
 		// Display ASCII art banner
 		console.log(styleText(["blue", "bold"], "hactar"));
-		console.log(styleText(["gray"], "get plex stats\n"));
+		console.log(styleText(["gray"], "Plex Library Management\n"));
 
 		this.logInfo("Available Commands:");
 
 		const commands = [
 			{
 				name: "configure",
-				description: "Set up Plex API credentials and preferences",
+				description:
+					"Prompts for Plex Server URL and token, then stores them in ~/.hactar/config.json",
 				usage: "hactar configure [options]",
 			},
 			{
 				name: "scan",
-				description: "Scan your Plex library for films",
-				usage: "hactar search <title> [options]",
+				description:
+					"Scans all known libraries, caches results locally, and displays a selectable list",
+				usage: "hactar scan",
+			},
+			{
+				name: "test",
+				description:
+					"Tests connectivity to the Plex server using stored credentials",
+				usage: "hactar test",
+			},
+			{
+				name: "dashboard",
+				description:
+					"Opens an interactive TUI dashboard showing storage statistics, library breakdowns and an item-by-item table. Requires a TTY",
+				usage: "hactar dashboard",
 			},
 			{
 				name: "help",
-				description: "Show this help information",
+				description: "Displays help information for available commands",
 				usage: "hactar help [command]",
 			},
 		];
@@ -74,15 +88,11 @@ export class HelpCommand extends BaseCommand {
 		this.logInfo("Getting Started:");
 		console.log('  1. Run "hactar configure" to set up your Plex token');
 		console.log('  2. Use "hactar scan" to scan your library');
-		console.log("  3. Select a film and save the data locally");
 		console.log("");
 
 		this.logInfo("Examples:");
 		console.log(styleText(["gray"], "  # Scan your library"));
 		console.log("  hactar scan");
-		console.log("");
-		console.log(styleText(["gray"], "  # Configure with custom settings"));
-		console.log("  hactar configure --token YOUR_TOKEN --server YOUR_SERVER");
 		console.log("");
 
 		this.logInfo("For more information:");
@@ -97,73 +107,32 @@ export class HelpCommand extends BaseCommand {
 	private async showCommandHelp(commandName: string): Promise<void> {
 		const commandHelp: Record<string, CommandHelp> = {
 			configure: {
-				description: "Configure Plex API credentials and application settings",
+				description:
+					"Prompts for Plex Server URL and token, then stores them in ~/.hactar/config.json",
 				usage: "hactar configure [options]",
-				options: [
-					{ flag: "-t, --token <key>", description: "Plex token" },
-					{
-						flag: "-s, --server <path>",
-						description: "Plex server url",
-					},
-				],
-				examples: [
-					"hactar configure",
-					"hactar configure --token YOUR_TOKEN --server YOUR_SERVER",
-				],
+				options: [],
+				examples: ["hactar configure"],
 			},
 			scan: {
-				description: "Scan your Plex library for films",
+				description:
+					"Scans libraries, caches results locally, and displays a selectable list",
 				usage: "hactar scan",
 				options: [],
 				examples: ["hactar scan"],
 			},
 			test: {
-				description: "Test Plex API connection and credentials",
+				description:
+					"Tests connectivity to the Plex server using stored credentials",
 				usage: "hactar test",
 				options: [],
 				examples: ["hactar test"],
 			},
-			list: {
-				description: "List all saved films",
-				usage: "hactar list [options]",
-				options: [
-					{
-						flag: "-o, --output <path>",
-						description: "Output directory to list films from",
-					},
-					{ flag: "-s, --stats", description: "Show storage statistics" },
-					{ flag: "-d, --delete", description: "Delete a film" },
-				],
-				examples: [
-					"hactar list",
-					"hactar list --stats",
-					"hactar list --output ./movies",
-					"hactar list --delete",
-				],
-			},
-			export: {
-				description: "Export saved film data to different formats or locations",
-				usage: "hactar export [options]",
-				options: [
-					{
-						flag: "-o, --output <path>",
-						description: "Output directory to export from",
-					},
-					{
-						flag: "-d, --destination <path>",
-						description: "Destination directory for export",
-					},
-					{
-						flag: "-f, --format <format>",
-						description: "Export format (json|csv|txt)",
-					},
-				],
-				examples: [
-					"hactar export",
-					"hactar export --format csv",
-					"hactar export --destination ./backup",
-					"hactar export --output ./movies --format json",
-				],
+			dashboard: {
+				description:
+					"Opens an interactive TUI dashboard showing storage statistics, library breakdowns and an item-by-item table. Requires a TTY",
+				usage: "hactar dashboard",
+				options: [],
+				examples: ["hactar dashboard"],
 			},
 		};
 

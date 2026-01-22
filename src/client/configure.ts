@@ -17,7 +17,6 @@ export class ConfigManager {
 	public getConfigDirectory(): string {
 		const homeDir = os.homedir();
 		const configDir = Filets.joinPaths(homeDir, ".hactar");
-		// Ensure config directory exists
 		Filets.ensureDirectoryExists(configDir);
 		return configDir;
 	}
@@ -29,12 +28,10 @@ export class ConfigManager {
 			}
 
 			const config = Filets.readJsonFile(this.configPath) as ConfigFile;
-			// Validate and merge with defaults
 			return this.validateAndMergeConfig(config);
 		} catch (error) {
 			throw new Error(
-				`Failed to load configuration: ${
-					error instanceof Error ? error.message : "Unknown error"
+				`Failed to load configuration: ${error instanceof Error ? error.message : "Unknown error"
 				}`,
 			);
 		}
@@ -42,28 +39,19 @@ export class ConfigManager {
 
 	public async saveConfig(config: ConfigFile): Promise<void> {
 		try {
-			// Ensure config directory exists
 			Filets.ensureDirectoryExists(this.configDir);
-			// Update timestamp
 			config.lastUpdated = new Date().toISOString();
-
-			// Write config file
 			Filets.writeJsonFile(this.configPath, config);
 		} catch (error) {
 			throw new Error(
-				`Failed to save configuration: ${
-					error instanceof Error ? error.message : "Unknown error"
+				`Failed to save configuration: ${error instanceof Error ? error.message : "Unknown error"
 				}`,
 			);
 		}
 	}
 	public async updateConfig(updates: Partial<UserConfig>): Promise<void> {
 		const config = await this.loadConfig();
-
-		// Merge updates with existing config
 		config.user = { ...config.user, ...updates };
-
-		// Save updated config
 		await this.saveConfig(config);
 	}
 
@@ -71,7 +59,6 @@ export class ConfigManager {
 		token?: string;
 		serverUrl?: string;
 	} | null> {
-		// First try to get from credentials file
 		const config = await this.loadConfig();
 		if (config?.user.token && config?.user.serverUrl) {
 			return {
@@ -79,8 +66,6 @@ export class ConfigManager {
 				serverUrl: config.user.serverUrl,
 			};
 		}
-
-		// Fallback to environment variable
 		return null;
 	}
 
@@ -98,14 +83,12 @@ export class ConfigManager {
 	}
 
 	private validateAndMergeConfig(config: ConfigFile): ConfigFile {
-		// Ensure all required fields exist
 		const validatedConfig: ConfigFile = {
 			user: { ...DEFAULT_USER_CONFIG, ...config.user },
 			app: { ...DEFAULT_APP_CONFIG, ...config.app },
 			lastUpdated: config.lastUpdated || new Date().toISOString(),
 		};
 
-		// Validate user config
 		if (!validatedConfig.user.token) {
 			validatedConfig.user.token = "";
 		}

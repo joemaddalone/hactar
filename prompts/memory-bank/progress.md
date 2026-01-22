@@ -21,7 +21,7 @@
 
 - **Music Library Support**: Implement scanning for music libraries (currently only supports movies and TV shows).
 - **Advanced Analytics**: Additional storage insights like duplicate detection, format analysis, and growth trends.
-- **CLI Polish**: Update program descriptions and add more detailed usage examples.
+- **CLI Polish**: ✅ Help command descriptions updated to match README - program descriptions now accurately reflect functionality.
 - **Enhanced Error Handling**: Handle more edge cases in API responses and network issues.
 - **Configuration Validation**: Add validation for Plex server URLs and token formats.
 
@@ -36,6 +36,5 @@
 
 ## Known Issues
 
-- Minor documentation issue: `src/commands/index.ts` description mentions "comprehensive data" but could be more specific about Plex functionality.
 - Dashboard requires TTY environment (properly handled with error message).
 - No automatic refresh mechanism in dashboard (manual restart for updated data).

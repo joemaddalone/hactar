@@ -23,7 +23,6 @@ export class ConfigureCommand extends BaseCommand {
 		let token = null;
 		let server = null;
 
-		// If not provided via command line, prompt for them
 		if (!token) {
 			const answers = await inquirer.prompt([
 				{
@@ -62,11 +61,9 @@ export class ConfigureCommand extends BaseCommand {
 			server = answers.server;
 		}
 
-		// Validate inputs
 		this.validateToken(token);
 		this.validateServer(server);
 
-		// Save configuration
 		const configManager = new ConfigManager();
 		await configManager.loadConfig();
 		await configManager.updateConfig({
@@ -78,7 +75,6 @@ export class ConfigureCommand extends BaseCommand {
 		this.logInfo(`Token: ***${token.slice(-4)}`);
 		this.logInfo(`Server: ${server}`);
 
-		// Test API connection
 		this.logInfo("Testing Plex API connection...");
 		const plexClient = new PlexClient();
 		const isConnected = await plexClient.testConnection();
