@@ -142,6 +142,7 @@ export class PlexClient {
               ratingKey: episode.ratingKey,
               episodeIndex: episode?.index || 0,
               bytes: episodeBytes,
+              humanBytes: bytesToHuman(episodeBytes),
             });
             s.bytes = (s.bytes || 0) + episodeBytes;
             s.files = (s.files || 0) + 1;

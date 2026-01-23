@@ -234,10 +234,14 @@ export class DashboardCommand extends BaseCommand {
 			case "show":
 				// Go back to library view
 				if (this.navigationState.libraryIndex === 0) {
+					this.currentSortColumn = "size";
+					this.sortDirection = "desc";
 					this.displayOverallItems(this.cachedLibraryData);
 				} else {
 					const lib = this.cachedLibraryData[this.navigationState.libraryIndex - 1];
 					if (lib?.data) {
+						this.currentSortColumn = "size";
+						this.sortDirection = "desc";
 						this.displayLibraryItems(lib.data);
 					}
 				}
@@ -248,6 +252,8 @@ export class DashboardCommand extends BaseCommand {
 				if (this.widgets?.libraryList) {
 					this.widgets.libraryList.select(0);
 				}
+				this.currentSortColumn = "size";
+				this.sortDirection = "desc";
 				this.displayOverallItems(this.cachedLibraryData);
 				break;
 			// "overall" is the root - can't go back further
