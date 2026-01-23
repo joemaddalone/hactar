@@ -1,5 +1,5 @@
 import type * as blessed from "blessed";
-import type { KeyboardCallbacks } from "./types";
+import type { KeyboardCallbacks, SortColumn } from "./types";
 
 /**
  * Sets up keyboard controls for the dashboard
@@ -56,24 +56,36 @@ export function setupKeyboardControls(
 		callbacks.onLastPage();
 	});
 
-	// Sorting controls
+	// Sorting controls - determine sort column dynamically based on current view
+	const getSortColumn = (keyIndex: number): SortColumn => {
+		const state = callbacks.getState();
+		const isShowOrSeason = state.currentView === "show" || state.currentView === "season";
+
+		if (isShowOrSeason) {
+			// Show/Season view: index, title, size, files
+			const columns: SortColumn[] = ["index", "title", "size", "files"];
+			return columns[keyIndex] || "index";
+		} else {
+			// Overall/Library view: title, size, files, library
+			const columns: SortColumn[] = ["title", "size", "files", "library"];
+			return columns[keyIndex] || "title";
+		}
+	};
+
 	screen.key(["1"], () => {
-		callbacks.onSortByColumn("title");
+		callbacks.onSortByColumn(getSortColumn(0));
 	});
 
 	screen.key(["2"], () => {
-		callbacks.onSortByColumn("size");
+		callbacks.onSortByColumn(getSortColumn(1));
 	});
 
 	screen.key(["3"], () => {
-		callbacks.onSortByColumn("files");
+		callbacks.onSortByColumn(getSortColumn(2));
 	});
 
 	screen.key(["4"], () => {
-		const state = callbacks.getState();
-		if (state.currentView === "overall") {
-			callbacks.onSortByColumn("library");
-		}
+		callbacks.onSortByColumn(getSortColumn(3));
 	});
 
 	// Toggle sort direction

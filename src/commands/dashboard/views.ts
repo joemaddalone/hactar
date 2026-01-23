@@ -69,6 +69,7 @@ export function collectSeasonItems(show: Show): DashboardItem[] {
 		size: season.humanBytes || "0 B",
 		files: season.files || 0,
 		bytes: season.bytes || 0,
+		index: season.seasonIndex || 0,
 		sourceType: "season" as const,
 		sourceKey: season.ratingKey,
 	}));
@@ -87,6 +88,7 @@ export function collectEpisodeItems(season: Season): DashboardItem[] {
 		size: episode.humanBytes || "0 B",
 		files: episode.files || 0,
 		bytes: episode.bytes || 0,
+		index: episode.episodeIndex || 0,
 		sourceType: "episode" as const,
 		sourceKey: episode.ratingKey,
 	}));

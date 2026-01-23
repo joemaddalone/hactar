@@ -53,6 +53,11 @@ export function createLayout(screen: blessed.Widgets.Screen): DashboardWidgets {
 		border: { type: "line" },
 		align: "left",
 		style: {
+			focus: {
+				border: {
+					fg: 'red' // Red border when focused
+				}
+			},
 			header: {
 				fg: "cyan",
 				bold: true,
@@ -61,7 +66,7 @@ export function createLayout(screen: blessed.Widgets.Screen): DashboardWidgets {
 				selected: {
 					fg: "black",
 					bg: "green",
-				},
+				}
 			},
 		},
 	});

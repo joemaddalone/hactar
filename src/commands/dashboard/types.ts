@@ -15,6 +15,7 @@ export interface DashboardItem {
 	files: number;
 	library?: string;
 	bytes?: number;
+	index?: number;
 	// Source reference for drill-down navigation
 	sourceType?: SourceType;
 	sourceKey?: string; // ratingKey to find original data
@@ -42,7 +43,7 @@ export type SortDirection = "asc" | "desc";
 /**
  * Sortable column names
  */
-export type SortColumn = "title" | "size" | "files" | "library";
+export type SortColumn = "index" | "title" | "size" | "files" | "library";
 
 /**
  * Dashboard widget references

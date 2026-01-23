@@ -14,6 +14,10 @@ export function sortItems(
 		let bValue: string | number;
 
 		switch (column) {
+			case "index":
+				aValue = a.index || 0;
+				bValue = b.index || 0;
+				break;
 			case "title":
 				aValue = a.title.toLowerCase();
 				bValue = b.title.toLowerCase();

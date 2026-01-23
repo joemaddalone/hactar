@@ -316,7 +316,6 @@ export class DashboardCommand extends BaseCommand {
 
 	private sortByColumn(column: SortColumn): void {
 		if (column === "library" && this.currentView !== "overall") return;
-
 		this.currentSortColumn = column;
 		this.currentPage = 1;
 		this.selectedTableIndex = 0;
@@ -462,8 +461,8 @@ export class DashboardCommand extends BaseCommand {
 		this.navigationState.currentSeason = undefined;
 		this.currentPage = 1;
 		this.selectedTableIndex = 0;
-		this.currentSortColumn = "size";
-		this.sortDirection = "desc";
+		this.currentSortColumn = "index";
+		this.sortDirection = "asc";
 
 		// Collect seasons using the modular function
 		this.currentItems = collectSeasonItems(show);
@@ -481,8 +480,8 @@ export class DashboardCommand extends BaseCommand {
 		this.navigationState.currentSeason = season;
 		this.currentPage = 1;
 		this.selectedTableIndex = 0;
-		this.currentSortColumn = "size";
-		this.sortDirection = "desc";
+		this.currentSortColumn = "index";
+		this.sortDirection = "asc";
 
 		// Collect episodes using the modular function
 		this.currentItems = collectEpisodeItems(season);
@@ -505,13 +504,31 @@ export class DashboardCommand extends BaseCommand {
 				? ["Title", "Size", "Files", "Library"]
 				: ["Title", "Size", "Files"];
 
+
+		// is this ia season or show
+		const isSeason = this.currentView === "season";
+		const isShow = this.currentView === "show";
+
+		if (isSeason) {
+			header.unshift(`Episode`);
+		}
+
+		if (isShow) {
+			header.unshift(`Season`);
+		}
+
+
 		// Add sort indicators to header
 		const sortIndicator = this.sortDirection === "asc" ? " ↑" : " ↓";
 		const headerWithSort = [...header];
-		const sortColumnIndex =
+		let sortColumnIndex =
 			this.currentView === "overall"
 				? ["title", "size", "files", "library"].indexOf(this.currentSortColumn)
 				: ["title", "size", "files"].indexOf(this.currentSortColumn);
+
+		if (isSeason || isShow) {
+			sortColumnIndex = ["index", "title", "size", "files"].indexOf(this.currentSortColumn);
+		}
 
 		if (sortColumnIndex >= 0) {
 			headerWithSort[sortColumnIndex] += sortIndicator;
@@ -534,13 +551,20 @@ export class DashboardCommand extends BaseCommand {
 				row.push(truncateTitle(item.library, 15));
 			}
 
+			if (isSeason || isShow) {
+				row.unshift(String(item.index));
+			}
+
 			tableData.push(row);
 		}
+
 
 		this.widgets.itemsTable.setData(tableData);
 
 		// Update table label based on current view
 		this.widgets.itemsTable.setLabel(this.getTableLabel());
+		// Set focus to the selected row
+		this.widgets.itemsTable.select(this.selectedTableIndex + 1);
 
 		this.screen?.render();
 	}
@@ -601,7 +625,7 @@ export class DashboardCommand extends BaseCommand {
 			"",
 			"Navigation:",
 			"Tab: Switch library | ↑↓: Select item | Enter: Drill down | Backspace: Go back",
-			"←/→: Page | 1-3: Sort | R: Reverse | 0: Overall | Q: Quit",
+			"←/→: Page | 1-4: Sort | R: Reverse | 0: Overall | Q: Quit",
 			canDrillDown ? `[${selectedItem.sourceType === "show" ? "→ Enter to view seasons" : "→ Enter to view episodes"}]` : "",
 		];
 
