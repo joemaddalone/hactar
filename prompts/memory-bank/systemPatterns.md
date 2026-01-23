@@ -7,6 +7,7 @@ Hactar is a production-ready TypeScript-based Node.js CLI application with a cle
 - **CLI Entry Point (`src/index.ts`)**: Initializes the CLI with proper error handling and process management.
 - **Command Registry (`src/commands/index.ts`)**: Manages registration and execution of all Commander.js commands.
 - **Commands (`src/commands/*`)**: Complete command implementations including `configure`, `test`, `scan`, `dashboard`, and `help`.
+- **Dashboard Modules (`src/commands/dashboard/*`)**: Modular dashboard with dedicated files for types, layout, keyboard controls, sorting, views, and storage chart rendering.
 - **Plex Client (`src/client/plex.ts`)**: Full-featured communication with the Plex API including authentication and data retrieval.
 - **Storage Client (`src/client/storage.ts`)**: Handles data aggregation and storage calculations.
 - **Configuration Manager (`src/client/configure.ts`)**: Interactive configuration system with credential persistence.
@@ -26,7 +27,7 @@ Hactar is a production-ready TypeScript-based Node.js CLI application with a cle
 
 - **Registry Pattern**: Centralized command management through `CommandRegistry`.
 - **Unified Data Structure**: `LibraryScanResult` serves as the standard exchange format between all components.
-- **Modular Architecture**: Clear separation of concerns with dedicated modules for each responsibility.
+- **Modular Architecture**: Clear separation of concerns with dedicated modules for each responsibility. Dashboard follows this with isolated modules for layout, keyboard, sorting, views, and storage chart.
 - **Async/Await**: Consistent asynchronous execution for all API calls and I/O operations.
 - **Error Boundaries**: Comprehensive error handling at multiple levels with user-friendly messages.
 - **Configuration Persistence**: Secure storage of user credentials with proper validation.

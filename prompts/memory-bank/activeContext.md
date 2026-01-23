@@ -8,6 +8,7 @@
 
 ## Recent Changes
 
+- **Dashboard Modularization**: Refactored `dashboard.ts` (600 lines) into 7 focused modules in `src/commands/dashboard/`: `types.ts`, `layout.ts`, `keyboard.ts`, `sorting.ts`, `views.ts`, `storage-chart.ts`, and `index.ts`. This prepares the codebase for hierarchical navigation implementation.
 - **Dashboard Navigation Improvements**: Added an "[ All Libraries ]" menu item to the Libraries panel and implemented keyboard shortcuts (`0`, `Esc`) to return to the overall view from any library-specific view.
 - **Enhanced TUI Dashboard**: Added comprehensive pagination and sorting functionality to the items table.
 - **Keyboard Controls**: Implemented intuitive keyboard shortcuts for navigation (arrow keys, home/end, number keys for sorting, and return-to-overall).
@@ -23,6 +24,7 @@
 
 ## Next Steps
 
+- **Hierarchical Navigation**: Implement drill-down from TV shows → seasons → episodes as documented in `hierarchical-navigation.md`.
 - Potential enhancements: music library support, advanced analytics.
 - ✅ CLI polishing completed - help command descriptions now accurately reflect usage.
 - Consider additional features based on user feedback.
