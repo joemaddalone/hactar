@@ -6,15 +6,16 @@ import type { DashboardWidgets } from "./types";
  */
 export function createLayout(screen: blessed.Widgets.Screen): DashboardWidgets {
 	// 1. Library List (left panel - 30% width)
+	// Note: keys/vi disabled - library switching now uses Tab
 	const libraryList = blessed.list({
 		parent: screen,
-		label: "Libraries",
+		label: "Libraries [Tab]",
 		top: 0,
 		left: 0,
 		width: "30%",
 		height: "70%",
-		keys: true,
-		vi: true,
+		keys: false,
+		vi: false,
 		invertSelected: true,
 		border: { type: "line" },
 		style: {
@@ -39,21 +40,28 @@ export function createLayout(screen: blessed.Widgets.Screen): DashboardWidgets {
 	});
 
 	// 3. Items Table (middle right - 70% width, 40% height)
+	// Note: keys/vi disabled - we handle Up/Down manually for drill-down
 	const itemsTable = blessed.listtable({
 		parent: screen,
-		label: "Items by Size",
+		label: "Items [↑↓ Enter]",
 		top: "30%",
 		left: "30%",
 		width: "70%",
 		height: "40%",
-		keys: true,
-		vi: true,
+		keys: false,
+		vi: false,
 		border: { type: "line" },
 		align: "left",
 		style: {
 			header: {
 				fg: "cyan",
 				bold: true,
+			},
+			cell: {
+				selected: {
+					fg: "black",
+					bg: "green",
+				},
 			},
 		},
 	});

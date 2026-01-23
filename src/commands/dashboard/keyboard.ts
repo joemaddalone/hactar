@@ -8,6 +8,30 @@ export function setupKeyboardControls(
 	screen: blessed.Widgets.Screen,
 	callbacks: KeyboardCallbacks,
 ): void {
+	// Table navigation controls
+	screen.key(["up", "k"], () => {
+		callbacks.onTableUp();
+	});
+
+	screen.key(["down", "j"], () => {
+		callbacks.onTableDown();
+	});
+
+	// Drill-down navigation
+	screen.key(["enter"], () => {
+		callbacks.onDrillDown();
+	});
+
+	// Back navigation
+	screen.key(["backspace", "b"], () => {
+		callbacks.onNavigateBack();
+	});
+
+	// Library cycling with Tab
+	screen.key(["tab"], () => {
+		callbacks.onCycleLibrary();
+	});
+
 	// Pagination controls
 	screen.key(["left", "a"], () => {
 		const state = callbacks.getState();
@@ -57,11 +81,8 @@ export function setupKeyboardControls(
 		callbacks.onToggleSortDirection();
 	});
 
-	// Return to overall view
-	screen.key(["escape", "0"], () => {
-		const state = callbacks.getState();
-		if (state.currentView !== "overall") {
-			callbacks.onReturnToOverall();
-		}
+	// Return to overall view (keeping 0 as shortcut)
+	screen.key(["0"], () => {
+		callbacks.onReturnToOverall();
 	});
 }

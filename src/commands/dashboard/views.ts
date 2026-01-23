@@ -1,4 +1,4 @@
-import type { LibraryScanResult } from "../../types";
+import type { LibraryScanResult, Show, Season } from "../../types";
 import type { CachedLibraryData, DashboardItem } from "./types";
 
 /**
@@ -13,12 +13,17 @@ export function collectOverallItems(
 		if (lib.data?.data) {
 			for (const item of lib.data.data) {
 				if (item) {
+					// Check if this is a show (has seasons property)
+					const isShow = "seasons" in item && Array.isArray((item as Show).seasons);
+
 					allItems.push({
 						title: item.title || "Untitled",
 						size: item.humanBytes || "0 B",
 						files: item.files || 0,
 						library: lib.title,
 						bytes: item.bytes || 0,
+						sourceType: isShow ? "show" : "movie",
+						sourceKey: item.ratingKey,
 					});
 				}
 			}
@@ -36,11 +41,54 @@ export function collectLibraryItems(data: LibraryScanResult): DashboardItem[] {
 		return [];
 	}
 
-	return data.data.map((item) => ({
-		title: item.title || "Untitled",
-		size: item.humanBytes || "0 B",
-		files: item.files || 0,
-		bytes: item.bytes || 0,
+	return data.data.map((item) => {
+		// Check if this is a show (has seasons property)
+		const isShow = "seasons" in item && Array.isArray((item as Show).seasons);
+
+		return {
+			title: item.title || "Untitled",
+			size: item.humanBytes || "0 B",
+			files: item.files || 0,
+			bytes: item.bytes || 0,
+			sourceType: isShow ? "show" : "movie",
+			sourceKey: item.ratingKey,
+		};
+	});
+}
+
+/**
+ * Collects seasons from a show
+ */
+export function collectSeasonItems(show: Show): DashboardItem[] {
+	if (!show.seasons || show.seasons.length === 0) {
+		return [];
+	}
+
+	return show.seasons.map((season) => ({
+		title: season.title || `Season ${season.seasonIndex}`,
+		size: season.humanBytes || "0 B",
+		files: season.files || 0,
+		bytes: season.bytes || 0,
+		sourceType: "season" as const,
+		sourceKey: season.ratingKey,
+	}));
+}
+
+/**
+ * Collects episodes from a season
+ */
+export function collectEpisodeItems(season: Season): DashboardItem[] {
+	if (!season.episodes || season.episodes.length === 0) {
+		return [];
+	}
+
+	return season.episodes.map((episode) => ({
+		title: episode.title || `Episode ${episode.episodeIndex}`,
+		size: episode.humanBytes || "0 B",
+		files: episode.files || 0,
+		bytes: episode.bytes || 0,
+		sourceType: "episode" as const,
+		sourceKey: episode.ratingKey,
 	}));
 }
 

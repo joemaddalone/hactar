@@ -1,5 +1,10 @@
 import type * as blessed from "blessed";
-import type { LibraryScanResult } from "../../types";
+import type { LibraryScanResult, Show, Season } from "../../types";
+
+/**
+ * Source type for drill-down navigation
+ */
+export type SourceType = "show" | "season" | "episode" | "movie";
 
 /**
  * Represents an item displayed in the dashboard table
@@ -10,6 +15,9 @@ export interface DashboardItem {
 	files: number;
 	library?: string;
 	bytes?: number;
+	// Source reference for drill-down navigation
+	sourceType?: SourceType;
+	sourceKey?: string; // ratingKey to find original data
 }
 
 /**
@@ -24,7 +32,7 @@ export interface CachedLibraryData {
 /**
  * Current view type in the dashboard
  */
-export type ViewType = "overall" | "library";
+export type ViewType = "overall" | "library" | "show" | "season";
 
 /**
  * Sort direction for table columns
@@ -48,6 +56,16 @@ export interface DashboardWidgets {
 }
 
 /**
+ * Navigation state for hierarchical drill-down
+ */
+export interface NavigationState {
+	level: ViewType;
+	libraryIndex: number;
+	currentShow?: Show | undefined;
+	currentSeason?: Season | undefined;
+}
+
+/**
  * Dashboard state for keyboard control callbacks
  */
 export interface DashboardState {
@@ -57,6 +75,8 @@ export interface DashboardState {
 	currentView: ViewType;
 	currentSortColumn: SortColumn;
 	sortDirection: SortDirection;
+	selectedTableIndex: number;
+	navigationState: NavigationState;
 }
 
 /**
@@ -70,5 +90,11 @@ export interface KeyboardCallbacks {
 	onSortByColumn: (column: SortColumn) => void;
 	onToggleSortDirection: () => void;
 	onReturnToOverall: () => void;
+	// Navigation controls
+	onCycleLibrary: () => void;
+	onDrillDown: () => void;
+	onNavigateBack: () => void;
+	onTableUp: () => void;
+	onTableDown: () => void;
 	getState: () => DashboardState;
 }
