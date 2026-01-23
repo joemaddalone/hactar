@@ -116,11 +116,13 @@ export class DashboardCommand extends BaseCommand {
 		return {
 			onPreviousPage: () => {
 				this.currentPage--;
+				this.selectedTableIndex = (this.currentPage - 1) * this.itemsPerPage;
 				this.refreshItemsTable();
 				this.updateStatusLog();
 			},
 			onNextPage: () => {
 				this.currentPage++;
+				this.selectedTableIndex = (this.currentPage - 1) * this.itemsPerPage;
 				this.refreshItemsTable();
 				this.updateStatusLog();
 			},
@@ -132,7 +134,7 @@ export class DashboardCommand extends BaseCommand {
 			},
 			onLastPage: () => {
 				this.currentPage = Math.ceil(this.totalItems / this.itemsPerPage);
-				this.selectedTableIndex = 0;
+				this.selectedTableIndex = (this.currentPage - 1) * this.itemsPerPage;
 				this.refreshItemsTable();
 				this.updateStatusLog();
 			},
@@ -569,8 +571,9 @@ export class DashboardCommand extends BaseCommand {
 
 		// Update table label based on current view
 		this.widgets.itemsTable.setLabel(this.getTableLabel());
-		// Set focus to the selected row
-		this.widgets.itemsTable.select(this.selectedTableIndex + 1);
+		// Set focus to the selected row (relative to current page + header)
+		const relativeIndex = (this.selectedTableIndex - startIndex) + 1;
+		this.widgets.itemsTable.select(relativeIndex);
 
 		this.screen?.render();
 	}
