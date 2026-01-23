@@ -30,5 +30,5 @@ Hactar is a production-ready TypeScript-based Node.js CLI application with a cle
 - **Async/Await**: Consistent asynchronous execution for all API calls and I/O operations.
 - **Error Boundaries**: Comprehensive error handling at multiple levels with user-friendly messages.
 - **Configuration Persistence**: Secure storage of user credentials with proper validation.
-- **State Management**: Centralized pagination and sorting state for consistent user experience.
+- **State Management**: Centralized pagination and sorting state for consistent user experience. Uses `cachedLibraryData` to persist library information for quick switching between library and overall views.
 - **Interactive UI Pattern**: Event-driven keyboard controls with immediate visual feedback.

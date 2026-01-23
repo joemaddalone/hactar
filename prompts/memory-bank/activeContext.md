@@ -8,11 +8,13 @@
 
 ## Recent Changes
 
+- **Dashboard Navigation Improvements**: Added an "[ All Libraries ]" menu item to the Libraries panel and implemented keyboard shortcuts (`0`, `Esc`) to return to the overall view from any library-specific view.
 - **Enhanced TUI Dashboard**: Added comprehensive pagination and sorting functionality to the items table.
-- **Keyboard Controls**: Implemented intuitive keyboard shortcuts for navigation (arrow keys, home/end, number keys for sorting).
+- **Keyboard Controls**: Implemented intuitive keyboard shortcuts for navigation (arrow keys, home/end, number keys for sorting, and return-to-overall).
 - **Dynamic Table Display**: Items now show sort indicators in headers and support 20-item pagination.
 - **Status Information**: Added detailed status log showing current page, total items, sort options, and control hints.
-- **Performance Optimization**: Efficient data handling with proper state management for large libraries.
+- **UI State Synchronization**: Selection in the Libraries panel now automatically syncs when using keyboard shortcuts to change views.
+- **Performance Optimization**: Efficient data handling with proper state management for large libraries using `cachedLibraryData`.
 - **User-Friendly Configuration**: Added interactive configuration prompts when scan or dashboard commands are run without proper setup.
 - **Improved Error Handling**: Enhanced user experience with helpful configuration offers instead of basic error messages.
 - **Help Command Refactoring**: Updated all command descriptions to accurately reflect actual usage as described in README, including banner description change from "get plex stats" to "Plex Library Management".

@@ -7,6 +7,7 @@
 - **Configuration Management**: `ConfigManager` for storing and retrieving server credentials interactively.
 - **Library Scanning**: `getLibraryItems` returns unified `LibraryScanResult` for both shows and movies with accurate size calculations.
 - **Enhanced TUI Dashboard**: Complete multi-panel terminal interface with library selection, storage metrics, and **paginated/sortable tabular data display**.
+- **Dashboard Navigation**: Seamless switching between overall view and library-specific views via an "[ All Libraries ]" menu item or keyboard shortcuts (`0`, `Esc`).
 - **Pagination System**: 20-item pages with keyboard navigation (arrow keys, home/end, A/D keys).
 - **Sorting Functionality**: Sort by title, size, files, and library (overall view) with ascending/descending options.
 - **Interactive Controls**: Number keys (1-3) for column sorting, R key to reverse sort direction.

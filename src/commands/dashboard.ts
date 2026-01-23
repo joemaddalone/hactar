@@ -19,6 +19,7 @@ export class DashboardCommand extends BaseCommand {
 	private totalItems: number = 0;
 	private currentSortColumn: string = "size";
 	private sortDirection: "asc" | "desc" = "desc";
+	private selectedLibrary: string | null = null;
 	private currentItems: Array<{
 		title: string;
 		size: string;
@@ -27,6 +28,11 @@ export class DashboardCommand extends BaseCommand {
 		bytes?: number;
 	}> = [];
 	private currentView: "overall" | "library" = "overall";
+	private cachedLibraryData: Array<{
+		key: string;
+		title: string;
+		data: LibraryScanResult | null;
+	}> = [];
 
 	protected createCommand(): Command {
 		return new Command("dashboard")
@@ -147,6 +153,16 @@ export class DashboardCommand extends BaseCommand {
 		this.screen.key(["r"], () => {
 			this.sortDirection = this.sortDirection === "asc" ? "desc" : "asc";
 			this.sortByColumn(this.currentSortColumn);
+		});
+
+		// Return to overall view
+		this.screen.key(["escape", "0"], () => {
+			if (this.currentView !== "overall") {
+				if (this.libraryList) {
+					this.libraryList.select(0);
+				}
+				this.displayOverallItems(this.cachedLibraryData);
+			}
 		});
 	}
 
@@ -301,8 +317,9 @@ export class DashboardCommand extends BaseCommand {
 		}
 
 		try {
-			// Get all available libraries from Plex
-			const libraries = await new PlexClient().getLibraries();
+
+			// get libraries from storage
+			const libraries = await storageClient.getLibraries();
 
 			if (!libraries || libraries.length === 0) {
 				if (this.statusLog) {
@@ -314,19 +331,15 @@ export class DashboardCommand extends BaseCommand {
 			}
 
 			// Load cached data for each library
-			const libraryData: Array<{
-				key: string;
-				title: string;
-				data: LibraryScanResult | null;
-			}> = [];
+			this.cachedLibraryData = [];
 			let totalSize = 0;
 			let totalFiles = 0;
 
 			for (const lib of libraries) {
 				const data = await storageClient.getLibraryData(lib.key);
-				libraryData.push({
+				this.cachedLibraryData.push({
 					key: lib.key,
-					title: lib.title || "Untitled",
+					title: lib.libraryName || "Untitled",
 					data: data,
 				});
 
@@ -336,20 +349,25 @@ export class DashboardCommand extends BaseCommand {
 				}
 			}
 
-			// Update library list
-			this.libraryList.setItems(libraryData.map((lib) => lib.title));
+			// Update library list with "All Libraries" option at the top
+			this.libraryList.setItems([
+				"[ All Libraries ]",
+				...this.cachedLibraryData.map((lib) => lib.title),
+			]);
 
 			// Update storage chart with overall metrics
-			this.updateStorageChart(totalSize, totalFiles, libraryData);
+			this.updateStorageChart(totalSize, totalFiles, this.cachedLibraryData);
 
 			// Set up library selection handler
 			this.libraryList.on("select", (_item, index) => {
-				const selectedLib = libraryData[index];
+				if (index === 0) {
+					this.displayOverallItems(this.cachedLibraryData);
+					return;
+				}
+
+				const selectedLib = this.cachedLibraryData[index - 1];
 				if (selectedLib?.data) {
 					this.displayLibraryItems(selectedLib.data);
-					if (this.statusLog) {
-						this.statusLog.setContent(`Selected library: ${selectedLib.title}`);
-					}
 				} else {
 					if (this.statusLog) {
 						this.statusLog.setContent(
@@ -360,13 +378,9 @@ export class DashboardCommand extends BaseCommand {
 			});
 
 			// Show overall view initially
-			this.displayOverallItems(libraryData);
+			this.displayOverallItems(this.cachedLibraryData);
+			this.updateStatusLog();
 
-			if (this.statusLog) {
-				this.statusLog.setContent(
-					`Loaded ${libraries.length} libraries, ${totalFiles} total files`,
-				);
-			}
 		} catch (error) {
 			if (this.statusLog) {
 				this.statusLog.setContent(
@@ -459,6 +473,8 @@ export class DashboardCommand extends BaseCommand {
 
 		this.currentView = "library";
 		this.currentPage = 1;
+		this.currentSortColumn = "size";
+		this.sortDirection = "desc";
 
 		if (!data.data || data.data.length === 0) {
 			this.currentItems = [];
@@ -486,6 +502,8 @@ export class DashboardCommand extends BaseCommand {
 		this.currentItems = items;
 		this.totalItems = items.length;
 
+		this.selectedLibrary = data.libraryName;
+
 		// Sort by current column and direction
 		this.sortByColumn(this.currentSortColumn);
 	}
@@ -501,6 +519,7 @@ export class DashboardCommand extends BaseCommand {
 		const header = this.currentView === "overall"
 			? ["Title", "Size", "Files", "Library"]
 			: ["Title", "Size", "Files"];
+
 
 		// Add sort indicators to header
 		const sortIndicator = this.sortDirection === "asc" ? " ↑" : " ↓";
@@ -541,14 +560,14 @@ export class DashboardCommand extends BaseCommand {
 		const endItem = Math.min(this.currentPage * this.itemsPerPage, this.totalItems);
 
 		const status = [
-			`View: ${this.currentView === "overall" ? "All Libraries" : "Selected Library"}`,
+			`View: ${this.currentView === "overall" ? "All Libraries" : this.selectedLibrary}`,
 			`Items: ${startItem}-${endItem} of ${this.totalItems}`,
 			`Page: ${this.currentPage}/${maxPage}`,
 			`Sort: ${this.currentSortColumn} (${this.sortDirection})`,
 			"",
 			"Controls:",
 			"←/→ or A/D: Navigate pages | Home/End or W/S: First/Last page",
-			"1-3: Sort by column | R: Reverse sort direction | Q: Quit",
+			"1-3: Sort by column | 0/Esc: Overall View | R: Reverse sort | Q: Quit",
 		];
 
 		this.statusLog.setContent(status.join("\n"));

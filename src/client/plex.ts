@@ -95,23 +95,24 @@ export class PlexClient {
    * Get all items from a specific library
    */
   async getLibraryItems(
-    libraryKey: string,
-    libraryType: string,
+    library: PlexLibraryResponse,
   ): Promise<LibraryScanResult> {
     const spinner = ora("Scanning Plex library...").start();
     const response = await this.request<PlexResponse<PlexMovieResponse>>(
-      `/library/sections/${libraryKey}/all`,
+      `/library/sections/${library.key}/all`,
     );
     const items = response.MediaContainer.Metadata || [];
 
     const parentdata: LibraryScanResult = {
       data: [],
+      libraryType: library.type,
+      libraryName: library.title,
       bytes: 0,
       files: 0,
       humanBytes: "",
     };
 
-    if (libraryType === "show") {
+    if (library.type === "show") {
       const shows: Show[] = [];
       for (const item of items) {
         const entry: Show = {

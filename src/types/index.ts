@@ -49,6 +49,8 @@ export type Show = Media & {
 
 export interface LibraryScanResult {
 	data: Show[] | Media[];
+	libraryType: string;
+	libraryName: string;
 	bytes: number;
 	files: number;
 	humanBytes: string;

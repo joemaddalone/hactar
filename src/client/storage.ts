@@ -35,6 +35,19 @@ export class StorageClient {
 		}
 	}
 
+	public async getLibraries(): Promise<{ key: string; libraryName: string; }[]> {
+		const files = Filets.getDirectoryContents(this.storageDir);;
+		const keys = files.map((file: string) => file.replace(/\.json$/, ""));
+		const libs = [];
+		for (const key of keys) {
+			const library = await this.getLibraryData(key);
+			if (library) {
+				libs.push({ key, libraryName: library.libraryName });
+			}
+		}
+		return libs;
+	}
+
 	public async getLibraryData(
 		library: string | number,
 	): Promise<LibraryScanResult | null> {

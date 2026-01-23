@@ -55,12 +55,15 @@ export class ScanCommand extends BaseCommand {
 			return;
 		}
 
-		const libraryType =
-			libraries.find((library) => library.key === answer)?.type || "";
+		const library = libraries.find((library) => library.key === answer);
+		if (!library) {
+			this.logError("Library not found");
+			return;
+		}
 
-		const results = await plexClient.getLibraryItems(answer, libraryType);
+		const results = await plexClient.getLibraryItems(library);
 		const storageClient = new StorageClient();
-		await storageClient.saveLibrary(answer, results);
+		await storageClient.saveLibrary(library.key, results);
 		this.logInfo(`Found ${results.data.length} items`);
 	}
 }
