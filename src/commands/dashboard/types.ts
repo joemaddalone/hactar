@@ -12,7 +12,7 @@ export type SourceType = "show" | "season" | "episode" | "movie";
 export interface DashboardItem {
 	title: string;
 	size: string;
-	files: number;
+	episodes: number;
 	library?: string;
 	bytes?: number;
 	index?: number;
@@ -43,7 +43,26 @@ export type SortDirection = "asc" | "desc";
 /**
  * Sortable column names
  */
-export type SortColumn = "index" | "title" | "size" | "files" | "library";
+export type SortColumn = "index" | "title" | "size" | "episodes" | "library";
+
+/**
+ * Column configuration
+ */
+export interface ColumnConfig {
+	key: SortColumn;
+	header: string;
+	width?: number;
+	hidden?: boolean;
+}
+
+/**
+ * View configuration
+ */
+export interface ViewConfig {
+	columns: ColumnConfig[];
+	defaultSortColumn: SortColumn;
+	defaultSortDirection: SortDirection;
+}
 
 /**
  * Dashboard widget references
@@ -78,6 +97,7 @@ export interface DashboardState {
 	sortDirection: SortDirection;
 	selectedTableIndex: number;
 	navigationState: NavigationState;
+	libraryType?: string | undefined;
 }
 
 /**

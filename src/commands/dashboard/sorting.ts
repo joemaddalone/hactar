@@ -26,9 +26,9 @@ export function sortItems(
 				aValue = a.bytes || parseSize(a.size);
 				bValue = b.bytes || parseSize(b.size);
 				break;
-			case "files":
-				aValue = a.files;
-				bValue = b.files;
+			case "episodes":
+				aValue = a.episodes;
+				bValue = b.episodes;
 				break;
 			case "library":
 				aValue = a.library?.toLowerCase() || "";

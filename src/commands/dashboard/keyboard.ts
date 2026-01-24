@@ -1,5 +1,6 @@
 import type * as blessed from "blessed";
 import type { KeyboardCallbacks, SortColumn } from "./types";
+import { displayItemsConfig } from "./display-items-config";
 
 /**
  * Sets up keyboard controls for the dashboard
@@ -59,17 +60,11 @@ export function setupKeyboardControls(
 	// Sorting controls - determine sort column dynamically based on current view
 	const getSortColumn = (keyIndex: number): SortColumn => {
 		const state = callbacks.getState();
-		const isShowOrSeason = state.currentView === "show" || state.currentView === "season";
+		const { currentView, libraryType } = state;
+		const { viewConfig } = displayItemsConfig(currentView, libraryType);
+		const { columns } = viewConfig;
 
-		if (isShowOrSeason) {
-			// Show/Season view: index, title, size, files
-			const columns: SortColumn[] = ["index", "title", "size", "files"];
-			return columns[keyIndex] || "index";
-		} else {
-			// Overall/Library view: title, size, files, library
-			const columns: SortColumn[] = ["title", "size", "files", "library"];
-			return columns[keyIndex] || "title";
-		}
+		return columns[keyIndex]?.key || columns[0].key;
 	};
 
 	screen.key(["1"], () => {

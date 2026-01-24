@@ -41,6 +41,7 @@ export class DashboardCommand extends BaseCommand {
   private selectedLibrary: string | null = null;
   private currentItems: DashboardItem[] = [];
   private currentView: ViewType = "overall";
+  private libraryType: string | undefined;
   private cachedLibraryData: CachedLibraryData[] = [];
 
   // Navigation state for hierarchical drill-down
@@ -178,6 +179,7 @@ export class DashboardCommand extends BaseCommand {
         sortDirection: this.sortDirection,
         selectedTableIndex: this.selectedTableIndex,
         navigationState: this.navigationState,
+        libraryType: this.libraryType,
       }),
     };
   }
@@ -427,23 +429,18 @@ export class DashboardCommand extends BaseCommand {
   }
 
   private displayItems(
-    type: string,
+    type: ViewType,
     libraryData: CachedLibraryData[] | Show | LibraryScanResult | Season,
   ) {
     if (!this.widgets?.itemsTable) return;
     type = type || "overall";
-    const config = displayItemsConfig(type);
-    this.currentView = config.currentView;
-    this.navigationState.level = config.level;
-    this.currentPage = config.currentPage;
-    this.currentSortColumn = config.currentSortColumn;
-    this.sortDirection = config.sortDirection;
-    this.selectedTableIndex = config.selectedTableIndex;
+
     switch (type) {
       case "overall": {
         this.currentItems = collectOverallItems(
           libraryData as CachedLibraryData[],
         );
+        this.libraryType = undefined;
         break;
       }
       case "library": {
@@ -452,6 +449,7 @@ export class DashboardCommand extends BaseCommand {
         this.navigationState.currentSeason = undefined;
         this.currentItems = collectLibraryItems(d);
         this.selectedLibrary = d.libraryName;
+        this.libraryType = d.libraryType;
         break;
       }
       case "show": {
@@ -459,15 +457,26 @@ export class DashboardCommand extends BaseCommand {
         this.navigationState.currentShow = show;
         this.navigationState.currentSeason = undefined;
         this.currentItems = collectSeasonItems(show);
+        // keep libraryType from parent
         break;
       }
       case "season": {
         const season = libraryData as Season;
         this.navigationState.currentSeason = season;
         this.currentItems = collectEpisodeItems(season);
+        // keep libraryType from parent
         break;
       }
     }
+
+    const config = displayItemsConfig(type, this.libraryType);
+    this.currentView = config.currentView;
+    this.navigationState.level = config.level;
+    this.currentPage = config.currentPage;
+    this.currentSortColumn = config.currentSortColumn;
+    this.sortDirection = config.sortDirection;
+    this.selectedTableIndex = config.selectedTableIndex;
+
     this.totalItems = this.currentItems.length;
     if (this.currentItems.length === 0) {
       this.refreshItemsTable();
@@ -484,37 +493,19 @@ export class DashboardCommand extends BaseCommand {
     const endIndex = startIndex + this.itemsPerPage;
     const pageItems = this.currentItems.slice(startIndex, endIndex);
 
+    const config = displayItemsConfig(this.currentView, this.libraryType);
+    const { columns } = config.viewConfig;
+
     // Prepare table data with header
-    const header =
-      this.currentView === "overall"
-        ? ["Title", "Size", "Files", "Library"]
-        : ["Title", "Size", "Files"];
-
-    // is this ia season or show
-    const isSeason = this.currentView === "season";
-    const isShow = this.currentView === "show";
-
-    if (isSeason) {
-      header.unshift(`Episode`);
-    }
-
-    if (isShow) {
-      header.unshift(`Season`);
-    }
+    const header = columns.map((col) => col.header);
 
     // Add sort indicators to header
     const sortIndicator = this.sortDirection === "asc" ? " ↑" : " ↓";
     const headerWithSort = [...header];
-    let sortColumnIndex =
-      this.currentView === "overall"
-        ? ["title", "size", "files", "library"].indexOf(this.currentSortColumn)
-        : ["title", "size", "files"].indexOf(this.currentSortColumn);
 
-    if (isSeason || isShow) {
-      sortColumnIndex = ["index", "title", "size", "files"].indexOf(
-        this.currentSortColumn,
-      );
-    }
+    const sortColumnIndex = columns.findIndex(
+      (col) => col.key === this.currentSortColumn,
+    );
 
     if (sortColumnIndex >= 0) {
       headerWithSort[sortColumnIndex] += sortIndicator;
@@ -527,18 +518,28 @@ export class DashboardCommand extends BaseCommand {
       const isSelected = startIndex + i === this.selectedTableIndex;
       const prefix = isSelected ? "→ " : "  ";
 
-      const row = [
-        prefix + truncateTitle(item.title, 28),
-        item.size,
-        String(item.files),
-      ];
+      const row: string[] = [];
 
-      if (this.currentView === "overall" && item.library) {
-        row.push(truncateTitle(item.library, 15));
-      }
-
-      if (isSeason || isShow) {
-        row.unshift(String(item.index));
+      for (const col of columns) {
+        let value = "";
+        switch (col.key) {
+          case "index":
+            value = String(item.index || 0);
+            break;
+          case "title":
+            value = prefix + truncateTitle(item.title, 28);
+            break;
+          case "size":
+            value = item.size;
+            break;
+          case "episodes":
+            value = String(item.episodes);
+            break;
+          case "library":
+            value = truncateTitle(item.library || "", 15);
+            break;
+        }
+        row.push(value);
       }
 
       tableData.push(row);
