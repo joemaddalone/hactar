@@ -75,6 +75,7 @@ Divide every job into the smallest possible atomic tasks and execute them one by
   2. Write test that reproduces bug
   3. Fix the specific calculation line
   4. Verify test passes
+  5. Verify linting passes
 
   Should I start with task 1?"
   output: "Bug fix broken into atomic steps"

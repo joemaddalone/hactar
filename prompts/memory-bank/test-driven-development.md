@@ -54,16 +54,23 @@ WORKFLOW STEPS:
 3. STOP - Get user verification
 4. Write minimal code to pass test (Green)
 5. RUN ALL TESTS - Ensure nothing breaks
-6. STOP - Get user verification
-7. Refactor if needed (Refactor)
-8. RUN ALL TESTS - Verify refactor didn't break anything
-9. STOP - Get user verification
-10. Repeat for next atomic feature
+6. RUN LINTING - Ensure nothing breaks
+7. STOP - Get user verification
+8. Refactor if needed (Refactor)
+9. RUN ALL TESTS - Verify refactor didn't break anything
+10. STOP - Get user verification
+11. Repeat for next atomic feature
 
 AUTO-TEST TRIGGER:
 
 - Any file modification under src/ automatically runs: `npm run test`
 - Must address any test failures before continuing development
+- Ensures continuous validation and early error detection
+
+AUTO-LINTING TRIGGER:
+
+- Any file modification under src/ automatically runs: `npm run lint`
+- Must address any linting failures before continuing development
 - Ensures continuous validation and early error detection
 
 EXAMPLES:
@@ -100,4 +107,8 @@ EXAMPLES:
   "✅ All tests pass. Safe to continue development."
   OR
   "❌ 2 tests failed. Must fix before proceeding."
+  "npm run lint"
+  "✅ All linting passes. Safe to continue development."
+  OR
+  "❌ 2 linting failures. Must fix before proceeding."
   output: "Continuous testing ensures code quality"

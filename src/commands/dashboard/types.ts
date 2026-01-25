@@ -98,6 +98,7 @@ export interface DashboardState {
 	selectedTableIndex: number;
 	navigationState: NavigationState;
 	libraryType?: string | undefined;
+	activeModal: string | null;
 }
 
 /**
@@ -117,5 +118,30 @@ export interface KeyboardCallbacks {
 	onNavigateBack: () => void;
 	onTableUp: () => void;
 	onTableDown: () => void;
+	// Modal controls
+	onOpenConfigureModal: () => void;
+	onOpenScanModal: () => void;
+	onCloseModal: () => void;
 	getState: () => DashboardState;
+}
+
+/**
+ * Modal types for dashboard integration
+ */
+export type ModalType = "configure" | "scan" | "none";
+
+/**
+ * Modal state interface
+ */
+export interface ModalState {
+	type: ModalType;
+	visible: boolean;
+	data?: unknown;
+}
+
+/**
+ * Extended dashboard state including modal state
+ */
+export interface ExtendedDashboardState extends DashboardState {
+	modalState: ModalState;
 }

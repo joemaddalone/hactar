@@ -10,6 +10,8 @@ import { setupKeyboardControls } from "./keyboard";
 import { displayItemsConfig } from "./display-items-config";
 import { sortItems } from "./sorting";
 import { updateStorageChart } from "./storage-chart";
+import { ModalManager } from "./modal";
+import { DashboardModalIntegration } from "./dashboard-modal-integration";
 import {
   collectOverallItems,
   collectLibraryItems,
@@ -26,11 +28,17 @@ import type {
   SortDirection,
   ViewType,
   KeyboardCallbacks,
+  DashboardState,
 } from "./types";
 
 export class DashboardCommand extends BaseCommand {
   private screen: blessed.Widgets.Screen | null = null;
   private widgets: DashboardWidgets | null = null;
+
+  // Modal management
+  private modalManager: ModalManager = new ModalManager();
+  private modalIntegration: DashboardModalIntegration | null = null;
+  private activeModal: string | null = null;
 
   // Pagination and sorting state
   private currentPage: number = 1;
@@ -107,10 +115,35 @@ export class DashboardCommand extends BaseCommand {
 
       // Set up keyboard controls using the modular function
       setupKeyboardControls(this.screen, this.createKeyboardCallbacks());
+
+      // Initialize modal integration
+      this.initializeModalIntegration();
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : String(error);
       this.logError(`Failed to initialize terminal UI: ${errorMsg}`);
       throw error;
+    }
+  }
+
+  private initializeModalIntegration(): void {
+    const initialDashboardState: DashboardState = {
+      currentPage: this.currentPage,
+      totalItems: this.totalItems,
+      itemsPerPage: this.itemsPerPage,
+      currentView: this.currentView,
+      currentSortColumn: this.currentSortColumn,
+      sortDirection: this.sortDirection,
+      selectedTableIndex: this.selectedTableIndex,
+      navigationState: this.navigationState,
+      libraryType: this.libraryType,
+      activeModal: this.activeModal,
+    };
+
+    this.modalIntegration = new DashboardModalIntegration(initialDashboardState);
+    
+    // Initialize modal manager (will be used in future phases)
+    if (this.modalManager && this.modalIntegration) {
+      // Modal infrastructure ready
     }
   }
 
@@ -170,6 +203,25 @@ export class DashboardCommand extends BaseCommand {
       onTableDown: () => {
         this.moveTableSelection(1);
       },
+      // Modal controls
+      onOpenConfigureModal: () => {
+        this.openConfigureModal();
+        if (this.screen) {
+          this.modalManager.createModal(this.screen, 'configure');
+          this.modalManager.showModal('configure');
+        }
+      },
+      onOpenScanModal: () => {
+        this.openScanModal();
+        if (this.screen) {
+          this.modalManager.createModal(this.screen, 'scan');
+          this.modalManager.showModal('scan');
+        }
+      },
+      onCloseModal: () => {
+        this.closeModal();
+        this.modalManager.hideModal();
+      },
       getState: () => ({
         currentPage: this.currentPage,
         totalItems: this.totalItems,
@@ -180,6 +232,7 @@ export class DashboardCommand extends BaseCommand {
         selectedTableIndex: this.selectedTableIndex,
         navigationState: this.navigationState,
         libraryType: this.libraryType,
+        activeModal: this.activeModal,
       }),
     };
   }
@@ -625,5 +678,22 @@ export class DashboardCommand extends BaseCommand {
 
     this.widgets.statusLog.setContent(status.join("\n"));
     this.screen?.render();
+  }
+
+  // Modal state management methods
+  public getActiveModal(): string | null {
+    return this.activeModal;
+  }
+
+  public openConfigureModal(): void {
+    this.activeModal = "configure";
+  }
+
+  public openScanModal(): void {
+    this.activeModal = "scan";
+  }
+
+  public closeModal(): void {
+    this.activeModal = null;
   }
 }
