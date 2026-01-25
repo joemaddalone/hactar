@@ -61,25 +61,14 @@ export class ConfigureCommand extends BaseCommand {
 			server = answers.server;
 		}
 
-		this.validateToken(token);
-		this.validateServer(server);
-
-		const configManager = new ConfigManager();
-		await configManager.loadConfig();
-		await configManager.updateConfig({
-			serverUrl: server,
-			token: token,
-		});
+		const isConfigured = await this.performConfiguration(server, token);
 
 		this.logSuccess("Configuration completed successfully!");
 		this.logInfo(`Token: ***${token.slice(-4)}`);
 		this.logInfo(`Server: ${server}`);
 
 		this.logInfo("Testing Plex API connection...");
-		const plexClient = new PlexClient();
-		const isConnected = await plexClient.testConnection();
-
-		if (isConnected) {
+		if (isConfigured) {
 			this.logSuccess("Plex API connection successful!");
 			this.logInfo('You can now use "hactar scan" to scan your library!');
 		} else {
@@ -100,5 +89,27 @@ export class ConfigureCommand extends BaseCommand {
 		if (!server || server.trim().length === 0) {
 			throw new Error("Server url is required");
 		}
+	}
+
+	public async performConfiguration(serverUrl: string, token: string): Promise<boolean> {
+		this.validateToken(token);
+		this.validateServer(serverUrl);
+
+		const configManager = new ConfigManager();
+		await configManager.loadConfig();
+		await configManager.updateConfig({
+			serverUrl: serverUrl,
+			token: token,
+		});
+
+		const plexClient = new PlexClient();
+		const isConnected = await plexClient.testConnection();
+
+		return isConnected;
+	}
+
+	public async testConnection(): Promise<boolean> {
+		const plexClient = new PlexClient();
+		return await plexClient.testConnection();
 	}
 }

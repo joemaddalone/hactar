@@ -4,7 +4,7 @@ import { BaseCommand } from "./base-command";
 import { PlexClient } from "../client/plex";
 import { StorageClient } from "../client/storage";
 import { select } from "@inquirer/prompts";
-import type { PlexLibraryResponse } from "../types";
+import type { LibraryScanResult, PlexLibraryResponse } from "../types";
 
 export class ScanCommand extends BaseCommand {
 	protected createCommand(): Command {
@@ -17,21 +17,18 @@ export class ScanCommand extends BaseCommand {
 
 	protected async execute(): Promise<void> {
 		this.logInfo("Scanning for libraries...");
-		const plexClient = new PlexClient();
 
-		const isConfigured = await plexClient.testConnection();
-		if (!isConfigured) {
+		try {
+			const libraries = await this.getAvailableLibraries();
+			await this.displayLibraries(libraries);
+		} catch (_error) {
 			await this.offerConfiguration();
 			return;
 		}
-
-		const libraries = await plexClient.getLibraries();
-		await this.displayLibraries(libraries, plexClient);
 	}
 
 	protected async displayLibraries(
 		libraries: PlexLibraryResponse[],
-		plexClient: PlexClient,
 	): Promise<void> {
 		const choices = [];
 		choices.push({
@@ -61,9 +58,28 @@ export class ScanCommand extends BaseCommand {
 			return;
 		}
 
-		const results = await plexClient.getLibraryItems(library);
-		const storageClient = new StorageClient();
-		await storageClient.saveLibrary(library.key, results);
+		const results = await this.performScan(library.key);
 		this.logInfo(`Found ${results.data.length} items`);
+	}
+
+	public async getAvailableLibraries(): Promise<PlexLibraryResponse[]> {
+		const plexClient = new PlexClient();
+
+		const isConfigured = await plexClient.testConnection();
+		if (!isConfigured) {
+			throw new Error('Plex connection failed');
+		}
+
+		return await plexClient.getLibraries();
+	}
+
+	public async performScan(libraryKey: string): Promise<LibraryScanResult> {
+		const plexClient = new PlexClient();
+
+		const results = await plexClient.getLibraryItems({ key: libraryKey } as PlexLibraryResponse);
+		const storageClient = new StorageClient();
+		await storageClient.saveLibrary(libraryKey, results);
+
+		return results;
 	}
 }
