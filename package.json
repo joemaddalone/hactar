@@ -29,7 +29,10 @@
 		"prebuild": "npm run clean",
 		"lint": "biome lint .",
 		"format": "biome format --write .",
-		"sync-ai": "node scripts/sync-ai.mjs"
+		"sync-ai": "node scripts/sync-ai.mjs",
+		"test": "vitest run",
+		"test:watch": "vitest watch",
+		"coverage": "vitest run --coverage"
 	},
 	"dependencies": {
 		"@joemaddalone/filets": "^1.1.0",
@@ -43,6 +46,8 @@
 		"@biomejs/biome": "^2.3.11",
 		"@types/blessed": "^0.1.27",
 		"@types/node": "^25.0.8",
-		"typescript": "^5.9.3"
+		"@vitest/coverage-v8": "^4.0.18",
+		"typescript": "^5.9.3",
+		"vitest": "^4.0.18"
 	}
 }

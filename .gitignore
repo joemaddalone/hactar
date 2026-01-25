@@ -3,10 +3,11 @@ node_modules
 .vscode
 dist/
 .DS_Store
-
+coverage
 
 .agent
 .cursor
 .github/copilot-instructions.md
+.kiro
 CLAUDE.MD
 AGENTS.MD
