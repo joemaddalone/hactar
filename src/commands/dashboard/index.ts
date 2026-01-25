@@ -204,17 +204,17 @@ export class DashboardCommand extends BaseCommand {
         this.moveTableSelection(1);
       },
       // Modal controls
-      onOpenConfigureModal: () => {
+      onOpenConfigureModal: async () => {
         this.openConfigureModal();
         if (this.screen) {
-          this.modalManager.createModal(this.screen, 'configure');
+          await this.modalManager.createModal(this.screen, 'configure');
           this.modalManager.showModal('configure');
         }
       },
       onOpenScanModal: async () => {
         this.openScanModal();
         if (this.screen) {
-          this.modalManager.createModal(this.screen, 'scan');
+          await this.modalManager.createModal(this.screen, 'scan');
           this.modalManager.showModal('scan');
 
           // Load libraries for the scan modal

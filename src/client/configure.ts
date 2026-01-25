@@ -66,6 +66,7 @@ export class ConfigManager {
 				serverUrl: config.user.serverUrl,
 			};
 		}
+		console.log("No credentials found");
 		return null;
 	}
 

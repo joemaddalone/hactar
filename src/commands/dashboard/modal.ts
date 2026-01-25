@@ -1,5 +1,6 @@
 import * as blessed from 'blessed';
 import type { ModalType, ModalState } from './types';
+import { ConfigManager } from '../../client/configure';
 
 export class ModalManager {
   private state: ModalState = {
@@ -71,6 +72,7 @@ export class ModalManager {
 
   // Configure modal field access
   public getServerUrl(): string {
+
     return this.serverUrlField?.getValue() || '';
   }
 
@@ -222,7 +224,7 @@ export class ModalManager {
     }
   }
 
-  public createModal(screen: blessed.Widgets.Screen, type: ModalType): blessed.Widgets.BoxElement {
+  public async createModal(screen: blessed.Widgets.Screen, type: ModalType): Promise<blessed.Widgets.BoxElement> {
     this.screen = screen;
 
     // Create backdrop
@@ -259,7 +261,7 @@ export class ModalManager {
 
     // Add content based on modal type
     if (type === 'configure') {
-      this.createConfigureContent();
+      await this.createConfigureContent();
     } else if (type === 'scan') {
       this.createScanContent();
     }
@@ -267,8 +269,20 @@ export class ModalManager {
     return this.modalWidget;
   }
 
-  private createConfigureContent(): void {
+  private async createConfigureContent(): Promise<void> {
     if (!this.modalWidget) return;
+
+    let serverUrl = '';
+    let token = '';
+    try {
+      const configManager = new ConfigManager();
+      const credentials = await configManager.getCredentials();
+      serverUrl = credentials?.serverUrl || '';
+      token = credentials?.token || '';
+    } catch (error) {
+      console.error('Error getting credentials:', error);
+    }
+
 
     const form = blessed.form({
       parent: this.modalWidget,
@@ -291,6 +305,7 @@ export class ModalManager {
       label: ' Server URL ',
       inputOnFocus: true,
       keys: true,
+      value: serverUrl,
     });
 
     // Token input
@@ -306,9 +321,10 @@ export class ModalManager {
         focus: { border: { fg: 'cyan' }, bg: 'black', fg: 'white' }
       },
       label: ' Token ',
-      secret: true,
+      // secret: true,
       inputOnFocus: true,
-      keys: true
+      keys: true,
+      value: token,
     });
 
 
