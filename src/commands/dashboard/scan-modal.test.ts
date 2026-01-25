@@ -84,7 +84,7 @@ describe('ScanModal', () => {
 
       // Assert
       expect(result).toEqual(mockScanResult);
-      expect(mockScanCommand.performScan).toHaveBeenCalledWith(libraryKey);
+      expect(mockScanCommand.performScan).toHaveBeenCalledWith({ key: libraryKey });
     });
   });
 });

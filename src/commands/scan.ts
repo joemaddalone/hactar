@@ -58,7 +58,7 @@ export class ScanCommand extends BaseCommand {
 			return;
 		}
 
-		const results = await this.performScan(library.key);
+		const results = await this.performScan(library);
 		this.logInfo(`Found ${results.data.length} items`);
 	}
 
@@ -73,12 +73,12 @@ export class ScanCommand extends BaseCommand {
 		return await plexClient.getLibraries();
 	}
 
-	public async performScan(libraryKey: string): Promise<LibraryScanResult> {
+	public async performScan(library: PlexLibraryResponse): Promise<LibraryScanResult> {
 		const plexClient = new PlexClient();
 
-		const results = await plexClient.getLibraryItems({ key: libraryKey } as PlexLibraryResponse);
+		const results = await plexClient.getLibraryItems(library as PlexLibraryResponse);
 		const storageClient = new StorageClient();
-		await storageClient.saveLibrary(libraryKey, results);
+		await storageClient.saveLibrary(library.key, results);
 
 		return results;
 	}

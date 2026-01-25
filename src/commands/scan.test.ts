@@ -69,7 +69,7 @@ describe('ScanCommand', () => {
     it('should scan library and return results', async () => {
       // Arrange
       const libraryKey = '1';
-      const mockLibrary: PlexLibraryResponse = { key: '1', title: 'Movies', type: 'movie' };
+      const mockLibrary: Partial<PlexLibraryResponse> = { key: '1', title: 'Movies', type: 'movie' };
       const mockScanResult: LibraryScanResult = {
         library: mockLibrary,
         data: [
@@ -79,7 +79,7 @@ describe('ScanCommand', () => {
         totalSize: 3000000,
         totalItems: 2,
       };
-      
+
       mockPlexClient.getLibraryItems.mockResolvedValue(mockScanResult);
 
       // Act
@@ -87,8 +87,8 @@ describe('ScanCommand', () => {
 
       // Assert
       expect(result).toEqual(mockScanResult);
-      expect(mockPlexClient.getLibraryItems).toHaveBeenCalledWith({ key: libraryKey });
-      expect(mockStorageClient.saveLibrary).toHaveBeenCalledWith(libraryKey, mockScanResult);
+      expect(mockPlexClient.getLibraryItems).toHaveBeenCalledWith(libraryKey);
+      expect(mockStorageClient.saveLibrary).toHaveBeenCalledWith(libraryKey.key, mockScanResult);
     });
   });
 });

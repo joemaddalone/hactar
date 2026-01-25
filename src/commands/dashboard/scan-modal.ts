@@ -1,5 +1,6 @@
 import { ScanCommand } from '../scan';
 import { Command } from 'commander';
+import type { PlexLibraryResponse } from '../../types';
 
 export class ScanModal {
   private scanCommand: ScanCommand;
@@ -19,6 +20,6 @@ export class ScanModal {
   }
 
   public async executeScan(libraryKey: string) {
-    return await this.scanCommand.performScan(libraryKey);
+    return await this.scanCommand.performScan({ key: libraryKey } as PlexLibraryResponse);
   }
 }
