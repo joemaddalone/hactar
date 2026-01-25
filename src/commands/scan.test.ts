@@ -87,7 +87,7 @@ describe('ScanCommand', () => {
 
       // Assert
       expect(result).toEqual(mockScanResult);
-      expect(mockPlexClient.getLibraryItems).toHaveBeenCalledWith(libraryKey);
+      expect(mockPlexClient.getLibraryItems).toHaveBeenCalledWith(libraryKey, true);
       expect(mockStorageClient.saveLibrary).toHaveBeenCalledWith(libraryKey.key, mockScanResult);
     });
   });

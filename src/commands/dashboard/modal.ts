@@ -16,7 +16,7 @@ export class ModalManager {
   private saveButton: blessed.Widgets.ButtonElement | null = null;
   private errorDisplay: blessed.Widgets.BoxElement | null = null;
   private libraryList: blessed.Widgets.ListElement | null = null;
-  private libraryData: Array<{key: string, title: string}> = [];
+  private libraryData: Array<{ key: string, title: string; }> = [];
   private screen: blessed.Widgets.Screen | null = null;
 
   public getState(): ModalState {
@@ -59,6 +59,16 @@ export class ModalManager {
     return this.progressWidget !== null;
   }
 
+  public hideProgress(): void {
+    if (this.progressWidget) {
+      this.progressWidget.hide();
+      this.progressWidget = null;
+      if (this.screen) {
+        this.screen.render();
+      }
+    }
+  }
+
   // Configure modal field access
   public getServerUrl(): string {
     return this.serverUrlField?.getValue() || '';
@@ -86,18 +96,18 @@ export class ModalManager {
 
   public validateConfigureForm(): string[] {
     const errors: string[] = [];
-    
+
     const serverUrl = this.getServerUrl().trim();
     const token = this.getToken().trim();
-    
+
     if (!serverUrl) {
       errors.push('Server URL is required');
     }
-    
+
     if (!token) {
       errors.push('Token is required');
     }
-    
+
     return errors;
   }
 
@@ -124,19 +134,19 @@ export class ModalManager {
   public async handleSaveClick(onSubmit: (serverUrl: string, token: string) => Promise<boolean>, onClose?: () => void): Promise<void> {
     // Clear any previous errors
     this.clearErrors();
-    
+
     // Validate form
     const errors = this.validateConfigureForm();
     if (errors.length > 0) {
       this.showErrors(errors);
       return;
     }
-    
+
     // Submit form data
     const serverUrl = this.getServerUrl();
     const token = this.getToken();
     const success = await onSubmit(serverUrl, token);
-    
+
     // Show feedback based on result
     if (success) {
       this.showSuccess('Configuration saved successfully');
@@ -161,8 +171,7 @@ export class ModalManager {
   }
 
 
-  // biome-ignore lint/suspicious/noExplicitAny: i dont care.
-  public showModal(type: ModalType, data?: any): void {
+  public showModal(type: ModalType, data?: unknown): void {
     this.state = {
       type,
       visible: true,
@@ -171,27 +180,27 @@ export class ModalManager {
 
     if (this.modalWidget) {
       this.modalWidget.show();
-      
+
       // Focus first input field for configure modal (only if focus method exists)
-      if (type === 'configure' && this.serverUrlField && typeof (this.serverUrlField as any).focus === 'function') {
+      if (type === 'configure' && this.serverUrlField && 'focus' in this.serverUrlField) {
         setTimeout(() => {
-          (this.serverUrlField as any).focus();
+          (this.serverUrlField as { focus(): void }).focus();
           if (this.screen) {
             this.screen.render();
           }
         }, 100);
       }
-      
+
       // Focus library list for scan modal
-      if (type === 'scan' && this.libraryList && typeof (this.libraryList as any).focus === 'function') {
+      if (type === 'scan' && this.libraryList && 'focus' in this.libraryList) {
         setTimeout(() => {
-          (this.libraryList as any).focus();
+          (this.libraryList as { focus(): void }).focus();
           if (this.screen) {
             this.screen.render();
           }
         }, 100);
       }
-      
+
       if (this.screen) {
         this.screen.render();
       }
@@ -269,7 +278,7 @@ export class ModalManager {
       width: '90%',
       height: 3,
       border: { type: 'line' },
-      style: { 
+      style: {
         border: { fg: 'white' },
         focus: { border: { fg: 'cyan' }, bg: 'black', fg: 'white' }
       },
@@ -287,7 +296,7 @@ export class ModalManager {
       width: '90%',
       height: 3,
       border: { type: 'line' },
-      style: { 
+      style: {
         border: { fg: 'white' },
         focus: { border: { fg: 'cyan' }, bg: 'black', fg: 'white' }
       },
@@ -299,21 +308,21 @@ export class ModalManager {
     });
 
     // Use keypress event to intercept tab before textbox processes it
-    if (this.serverUrlField && typeof (this.serverUrlField as any).on === 'function') {
-      (this.serverUrlField as any).on('keypress', (_ch: any, key: any) => {
-        if (key && key.name === 'tab') {
-          if (this.tokenField && typeof (this.tokenField as any).focus === 'function') {
-            (this.tokenField as any).focus();
+    if (this.serverUrlField && 'on' in this.serverUrlField) {
+      (this.serverUrlField as { on(event: string, callback: (ch: unknown, key: unknown) => void): void }).on('keypress', (_ch: unknown, key: unknown) => {
+        if ((key as { name?: string })?.name === 'tab') {
+          if (this.tokenField && 'focus' in this.tokenField) {
+            (this.tokenField as { focus(): void }).focus();
           }
         }
       });
     }
 
-    if (this.tokenField && typeof (this.tokenField as any).on === 'function') {
-      (this.tokenField as any).on('keypress', (_ch: any, key: any) => {
-        if (key && key.name === 'tab') {
-          if (this.saveButton && typeof (this.saveButton as any).focus === 'function') {
-            (this.saveButton as any).focus();
+    if (this.tokenField && 'on' in this.tokenField) {
+      (this.tokenField as { on(event: string, callback: (ch: unknown, key: unknown) => void): void }).on('keypress', (_ch: unknown, key: unknown) => {
+        if ((key as { name?: string })?.name === 'tab') {
+          if (this.saveButton && 'focus' in this.saveButton) {
+            (this.saveButton as { focus(): void }).focus();
           }
         }
       });
@@ -359,11 +368,11 @@ export class ModalManager {
       style: { fg: 'yellow' },
     });
 
-    if (this.saveButton && typeof (this.saveButton as any).on === 'function') {
-      (this.saveButton as any).on('keypress', (_ch: any, key: any) => {
-        if (key && key.name === 'tab') {
-          if (this.serverUrlField && typeof (this.serverUrlField as any).focus === 'function') {
-            (this.serverUrlField as any).focus();
+    if (this.saveButton && 'on' in this.saveButton) {
+      (this.saveButton as { on(event: string, callback: (ch: unknown, key: unknown) => void): void }).on('keypress', (_ch: unknown, key: unknown) => {
+        if ((key as { name?: string })?.name === 'tab') {
+          if (this.serverUrlField && 'focus' in this.serverUrlField) {
+            (this.serverUrlField as { focus(): void }).focus();
           }
         }
       });
@@ -395,9 +404,9 @@ export class ModalManager {
     });
 
     // Focus the library list when modal is shown
-    if (this.libraryList && typeof (this.libraryList as any).focus === 'function') {
+    if (this.libraryList && 'focus' in this.libraryList) {
       setTimeout(() => {
-        (this.libraryList as any).focus();
+        (this.libraryList as { focus(): void }).focus();
         if (this.screen) {
           this.screen.render();
         }
@@ -417,7 +426,7 @@ export class ModalManager {
   }
 
   // Scan modal library loading
-  public async loadLibraries(getLibraries: () => Promise<Array<{key: string, title: string}>>): Promise<void> {
+  public async loadLibraries(getLibraries: () => Promise<Array<{ key: string, title: string; }>>): Promise<void> {
     try {
       const libraries = await getLibraries();
       this.updateLibraryList(libraries);
@@ -432,14 +441,14 @@ export class ModalManager {
     }
   }
 
-  public updateLibraryList(libraries: Array<{key: string, title: string}>): void {
+  public updateLibraryList(libraries: Array<{ key: string, title: string; }>): void {
     this.libraryData = libraries;
-    
+
     if (this.libraryList) {
-      const items = libraries.length > 0 
+      const items = libraries.length > 0
         ? libraries.map(lib => `${lib.title} (${lib.key})`)
         : ['No libraries found'];
-      
+
       this.libraryList.setItems(items);
       if (this.screen) {
         this.screen.render();
@@ -451,7 +460,7 @@ export class ModalManager {
     if (!this.libraryList || this.libraryData.length === 0) {
       return null;
     }
-    
+
     // Use type assertion through unknown for blessed list widget
     const selectedIndex = (this.libraryList as unknown as { selected: number }).selected || 0;
     const selectedLibrary = this.libraryData[selectedIndex];
@@ -461,18 +470,18 @@ export class ModalManager {
   // Scan execution
   public async handleScanClick(onScan: (libraryKey: string) => Promise<boolean>, onClose?: () => void, onRefresh?: () => void): Promise<void> {
     const selectedKey = this.getSelectedLibraryKey();
-    
+
     if (!selectedKey) {
       this.showErrors(['Please select a library to scan']);
       return;
     }
-    
+
     // Show progress during scan
     this.showProgress('Scanning library...');
-    
+
     try {
       const success = await onScan(selectedKey);
-      
+
       if (success) {
         this.showSuccess('Scan completed successfully');
         // Close modal and refresh dashboard after successful scan
