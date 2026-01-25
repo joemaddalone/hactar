@@ -4,12 +4,15 @@
 
 - Hactar is a fully functional CLI tool for Plex media server storage analysis.
 - All core features are implemented and working: configuration, connection testing, library scanning, and TUI dashboard.
-- The project is in a stable, production-ready state with enhanced dashboard features and accurate documentation.
+- The project is in a stable, production-ready state (v1.3.0) with complete hierarchical navigation and enhanced dashboard features.
+- Project is ready for distribution via npm with proper package configuration.
 
 ## Recent Changes
 
-- **Dashboard Modularization**: Refactored `dashboard.ts` (600 lines) into 7 focused modules in `src/commands/dashboard/`: `types.ts`, `layout.ts`, `keyboard.ts`, `sorting.ts`, `views.ts`, `storage-chart.ts`, and `index.ts`. This prepares the codebase for hierarchical navigation implementation.
-- **Dashboard Navigation Improvements**: Added an "[ All Libraries ]" menu item to the Libraries panel and implemented keyboard shortcuts (`0`, `Esc`) to return to the overall view from any library-specific view.
+- **Dashboard Column Management Refactoring**: Consolidated column definitions and sorting logic into `display-items-config.ts`. Implemented dynamic column visibility (e.g., hiding "Episodes" for movie libraries) and renamed "Files" to "Episodes" throughout the dashboard.
+- **Hierarchical Navigation Completion**: Fully implemented drill-down from TV shows → seasons → episodes, including back-navigation and state management.
+- **Version Bump**: Updated to `v1.3.0` following the major dashboard refactoring and hierarchical navigation completion.
+- **Dashboard Modularization**: Refactored `dashboard.ts` into multiple focused modules in `src/commands/dashboard/`.
 - **Enhanced TUI Dashboard**: Added comprehensive pagination and sorting functionality to the items table.
 - **Keyboard Controls**: Implemented intuitive keyboard shortcuts for navigation (arrow keys, home/end, number keys for sorting, and return-to-overall).
 - **Dynamic Table Display**: Items now show sort indicators in headers and support 20-item pagination.
@@ -24,10 +27,12 @@
 
 ## Next Steps
 
-- **Hierarchical Navigation**: Implement drill-down from TV shows → seasons → episodes as documented in `hierarchical-navigation.md`.
-- Potential enhancements: music library support, advanced analytics.
-- ✅ CLI polishing completed - help command descriptions now accurately reflect usage.
-- Consider additional features based on user feedback.
+- **Hierarchical Navigation**: ✅ Fully implemented drill-down from TV shows → seasons → episodes as documented in `hierarchical-navigation.md`.
+- **CLI Polish**: ✅ All help command descriptions accurately reflect usage and functionality.
+- **NPM Publishing**: ✅ Package.json fully configured for CLI distribution.
+- **Documentation**: ✅ README optimized for end-user npm installation workflow.
+- Potential future enhancements: music library support, advanced analytics, duplicate detection.
+- Consider additional features based on user feedback after public release.
 
 ## Active Decisions and Considerations
 

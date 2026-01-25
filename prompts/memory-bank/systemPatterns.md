@@ -28,8 +28,10 @@ Hactar is a production-ready TypeScript-based Node.js CLI application with a cle
 - **Registry Pattern**: Centralized command management through `CommandRegistry`.
 - **Unified Data Structure**: `LibraryScanResult` serves as the standard exchange format between all components.
 - **Modular Architecture**: Clear separation of concerns with dedicated modules for each responsibility. Dashboard follows this with isolated modules for layout, keyboard, sorting, views, and storage chart.
+- **Centralized Configuration**: All dashboard view-specific logic (columns, headers, default sorting, dynamic visibility) is centralized in `display-items-config.ts`, making UI changes maintainable and consistent.
 - **Async/Await**: Consistent asynchronous execution for all API calls and I/O operations.
 - **Error Boundaries**: Comprehensive error handling at multiple levels with user-friendly messages.
 - **Configuration Persistence**: Secure storage of user credentials with proper validation.
 - **State Management**: Centralized pagination and sorting state for consistent user experience. Uses `cachedLibraryData` to persist library information for quick switching between library and overall views.
-- **Interactive UI Pattern**: Event-driven keyboard controls with immediate visual feedback.
+- **Interactive UI Pattern**: Event-driven keyboard controls with immediate visual feedback and hierarchical navigation support.
+- **Command Pattern**: Each CLI command is implemented as a separate class extending `BaseCommand` for consistent error handling and configuration management.
