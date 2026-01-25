@@ -16,14 +16,16 @@ const createMockWidget = () => ({
   _value: '',
 });
 
+const createMockTextbox = () => {
+  const widget = createMockWidget();
+  widget.getValue = vi.fn(() => widget._value || '');
+  widget.setValue = vi.fn((value: string) => { widget._value = value; });
+  return widget;
+};
+
 vi.mock('blessed', () => ({
   box: vi.fn(() => createMockWidget()),
-  textbox: vi.fn(() => {
-    const widget = createMockWidget();
-    widget.getValue = vi.fn(() => widget._value || '');
-    widget.setValue = vi.fn((value: string) => { widget._value = value; });
-    return widget;
-  }),
+  textbox: vi.fn(() => createMockTextbox()),
   button: vi.fn(() => createMockWidget()),
   list: vi.fn(() => createMockWidget()),
   form: vi.fn(() => createMockWidget()),
@@ -95,9 +97,9 @@ describe('ModalManager', () => {
   });
 
   describe('modal creation and rendering', () => {
-    it('should create modal widget and return it', () => {
+    it('should create modal widget and return it', async () => {
       // Act
-      const result = modalManager.createModal(mockScreen as any, 'configure');
+      const result = await modalManager.createModal(mockScreen as any, 'configure');
 
       // Assert
       expect(result).toBeDefined();
@@ -127,9 +129,9 @@ describe('ModalManager', () => {
   });
 
   describe('modal backdrop', () => {
-    it('should create backdrop when showing modal', () => {
+    it('should create backdrop when showing modal', async () => {
       // Act
-      modalManager.createModal(mockScreen as any, 'configure');
+      await modalManager.createModal(mockScreen as any, 'configure');
       modalManager.showModal('configure');
 
       // Assert
@@ -138,9 +140,9 @@ describe('ModalManager', () => {
   });
 
   describe('modal positioning', () => {
-    it('should center modal on screen', () => {
+    it('should center modal on screen', async () => {
       // Act
-      modalManager.createModal(mockScreen as any, 'configure');
+      await modalManager.createModal(mockScreen as any, 'configure');
       
       // Assert
       expect(modalManager.isModalCentered()).toBe(true);
@@ -148,9 +150,9 @@ describe('ModalManager', () => {
   });
 
   describe('progress indicator', () => {
-    it('should show progress indicator during operations', () => {
+    it('should show progress indicator during operations', async () => {
       // Act
-      modalManager.createModal(mockScreen as any, 'configure');
+      await modalManager.createModal(mockScreen as any, 'configure');
       modalManager.showProgress('Loading...');
       
       // Assert
@@ -159,9 +161,9 @@ describe('ModalManager', () => {
   });
 
   describe('configure modal form fields', () => {
-    it('should get and set server URL field value', () => {
+    it('should get and set server URL field value', async () => {
       // Arrange
-      modalManager.createModal(mockScreen as any, 'configure');
+      await modalManager.createModal(mockScreen as any, 'configure');
       
       // Act
       modalManager.setServerUrl('http://localhost:32400');
@@ -171,9 +173,9 @@ describe('ModalManager', () => {
       expect(value).toBe('http://localhost:32400');
     });
 
-    it('should get and set token field value', () => {
+    it('should get and set token field value', async () => {
       // Arrange
-      modalManager.createModal(mockScreen as any, 'configure');
+      await modalManager.createModal(mockScreen as any, 'configure');
       
       // Act
       modalManager.setToken('test-token-123');
@@ -183,9 +185,9 @@ describe('ModalManager', () => {
       expect(value).toBe('test-token-123');
     });
 
-    it('should validate form fields and return errors', () => {
+    it('should validate form fields and return errors', async () => {
       // Arrange
-      modalManager.createModal(mockScreen as any, 'configure');
+      await modalManager.createModal(mockScreen as any, 'configure');
       modalManager.setServerUrl('');
       modalManager.setToken('');
       
@@ -197,9 +199,9 @@ describe('ModalManager', () => {
       expect(errors).toContain('Token is required');
     });
 
-    it('should validate form fields and return no errors when valid', () => {
+    it('should validate form fields and return no errors when valid', async () => {
       // Arrange
-      modalManager.createModal(mockScreen as any, 'configure');
+      await modalManager.createModal(mockScreen as any, 'configure');
       modalManager.setServerUrl('http://localhost:32400');
       modalManager.setToken('valid-token');
       
@@ -212,7 +214,7 @@ describe('ModalManager', () => {
 
     it('should handle save button click with form submission', async () => {
       // Arrange
-      modalManager.createModal(mockScreen as any, 'configure');
+      await modalManager.createModal(mockScreen as any, 'configure');
       modalManager.setServerUrl('http://localhost:32400');
       modalManager.setToken('valid-token');
       
@@ -227,7 +229,7 @@ describe('ModalManager', () => {
 
     it('should show validation errors when save clicked with invalid data', async () => {
       // Arrange
-      modalManager.createModal(mockScreen as any, 'configure');
+      await modalManager.createModal(mockScreen as any, 'configure');
       modalManager.setServerUrl('');
       modalManager.setToken('');
       
@@ -244,7 +246,7 @@ describe('ModalManager', () => {
 
     it('should show success message when save succeeds', async () => {
       // Arrange
-      modalManager.createModal(mockScreen as any, 'configure');
+      await modalManager.createModal(mockScreen as any, 'configure');
       modalManager.setServerUrl('http://localhost:32400');
       modalManager.setToken('valid-token');
       
@@ -260,7 +262,7 @@ describe('ModalManager', () => {
 
     it('should show error message when save fails', async () => {
       // Arrange
-      modalManager.createModal(mockScreen as any, 'configure');
+      await modalManager.createModal(mockScreen as any, 'configure');
       modalManager.setServerUrl('http://localhost:32400');
       modalManager.setToken('invalid-token');
       
@@ -403,7 +405,7 @@ describe('ModalManager', () => {
 
     it('should close modal after successful configuration save', async () => {
       // Arrange
-      modalManager.createModal(mockScreen as any, 'configure');
+      await modalManager.createModal(mockScreen as any, 'configure');
       modalManager.setServerUrl('http://localhost:32400');
       modalManager.setToken('valid-token');
       
@@ -422,7 +424,7 @@ describe('ModalManager', () => {
 
     it('should allow retry after failed configuration save', async () => {
       // Arrange
-      modalManager.createModal(mockScreen as any, 'configure');
+      await modalManager.createModal(mockScreen as any, 'configure');
       modalManager.setServerUrl('http://localhost:32400');
       modalManager.setToken('invalid-token');
       

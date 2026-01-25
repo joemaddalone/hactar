@@ -7,6 +7,7 @@ describe('DashboardModalIntegration', () => {
   let mockDashboardState: DashboardState;
 
   beforeEach(() => {
+    // @ts-expect-error
     mockDashboardState = {
       currentPage: 1,
       totalItems: 100,
