@@ -270,6 +270,17 @@ export class DashboardCommand extends BaseCommand {
           }, 100);
         }
       },
+      onConfigureModalEnter: () => {
+        this.modalManager.handleSaveClick(
+          async (serverUrl: string, token: string) => {
+            const { ConfigureCommand } = await import('../configure');
+            const { Command } = await import('commander');
+            const configureCommand = new ConfigureCommand(new Command());
+            return await configureCommand.performConfiguration(serverUrl, token);
+          },
+          () => this.closeModal()
+        );
+      },
       getState: () => ({
         currentPage: this.currentPage,
         totalItems: this.totalItems,

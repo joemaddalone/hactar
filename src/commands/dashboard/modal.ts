@@ -184,7 +184,7 @@ export class ModalManager {
       // Focus first input field for configure modal (only if focus method exists)
       if (type === 'configure' && this.serverUrlField && 'focus' in this.serverUrlField) {
         setTimeout(() => {
-          (this.serverUrlField as { focus(): void }).focus();
+          (this.serverUrlField as { focus(): void; }).focus();
           if (this.screen) {
             this.screen.render();
           }
@@ -194,7 +194,7 @@ export class ModalManager {
       // Focus library list for scan modal
       if (type === 'scan' && this.libraryList && 'focus' in this.libraryList) {
         setTimeout(() => {
-          (this.libraryList as { focus(): void }).focus();
+          (this.libraryList as { focus(): void; }).focus();
           if (this.screen) {
             this.screen.render();
           }
@@ -270,9 +270,15 @@ export class ModalManager {
   private createConfigureContent(): void {
     if (!this.modalWidget) return;
 
+    const form = blessed.form({
+      parent: this.modalWidget,
+      keys: true
+    });
+
+
     // Server URL input
     this.serverUrlField = blessed.textbox({
-      parent: this.modalWidget,
+      parent: form,
       top: 2,
       left: 2,
       width: '90%',
@@ -285,12 +291,11 @@ export class ModalManager {
       label: ' Server URL ',
       inputOnFocus: true,
       keys: true,
-      mouse: true,
     });
 
     // Token input
     this.tokenField = blessed.textbox({
-      parent: this.modalWidget,
+      parent: form,
       top: 6,
       left: 2,
       width: '90%',
@@ -303,34 +308,13 @@ export class ModalManager {
       label: ' Token ',
       secret: true,
       inputOnFocus: true,
-      keys: true,
-      mouse: true,
+      keys: true
     });
 
-    // Use keypress event to intercept tab before textbox processes it
-    if (this.serverUrlField && 'on' in this.serverUrlField) {
-      (this.serverUrlField as { on(event: string, callback: (ch: unknown, key: unknown) => void): void }).on('keypress', (_ch: unknown, key: unknown) => {
-        if ((key as { name?: string })?.name === 'tab') {
-          if (this.tokenField && 'focus' in this.tokenField) {
-            (this.tokenField as { focus(): void }).focus();
-          }
-        }
-      });
-    }
-
-    if (this.tokenField && 'on' in this.tokenField) {
-      (this.tokenField as { on(event: string, callback: (ch: unknown, key: unknown) => void): void }).on('keypress', (_ch: unknown, key: unknown) => {
-        if ((key as { name?: string })?.name === 'tab') {
-          if (this.saveButton && 'focus' in this.saveButton) {
-            (this.saveButton as { focus(): void }).focus();
-          }
-        }
-      });
-    }
 
     // Save button
     this.saveButton = blessed.button({
-      parent: this.modalWidget,
+      parent: form,
       top: 10,
       left: 2,
       width: 12,
@@ -347,7 +331,7 @@ export class ModalManager {
 
     // Error display
     this.errorDisplay = blessed.box({
-      parent: this.modalWidget,
+      parent: form,
       top: 14,
       left: 2,
       width: '90%',
@@ -359,7 +343,7 @@ export class ModalManager {
 
     // Instructions
     blessed.box({
-      parent: this.modalWidget,
+      parent: form,
       bottom: 1,
       left: 2,
       width: '90%',
@@ -367,16 +351,6 @@ export class ModalManager {
       content: 'Tab: Next field | Enter: Save | Escape: Cancel',
       style: { fg: 'yellow' },
     });
-
-    if (this.saveButton && 'on' in this.saveButton) {
-      (this.saveButton as { on(event: string, callback: (ch: unknown, key: unknown) => void): void }).on('keypress', (_ch: unknown, key: unknown) => {
-        if ((key as { name?: string })?.name === 'tab') {
-          if (this.serverUrlField && 'focus' in this.serverUrlField) {
-            (this.serverUrlField as { focus(): void }).focus();
-          }
-        }
-      });
-    }
   }
 
   private createScanContent(): void {
@@ -406,7 +380,7 @@ export class ModalManager {
     // Focus the library list when modal is shown
     if (this.libraryList && 'focus' in this.libraryList) {
       setTimeout(() => {
-        (this.libraryList as { focus(): void }).focus();
+        (this.libraryList as { focus(): void; }).focus();
         if (this.screen) {
           this.screen.render();
         }
@@ -462,7 +436,7 @@ export class ModalManager {
     }
 
     // Use type assertion through unknown for blessed list widget
-    const selectedIndex = (this.libraryList as unknown as { selected: number }).selected || 0;
+    const selectedIndex = (this.libraryList as unknown as { selected: number; }).selected || 0;
     const selectedLibrary = this.libraryData[selectedIndex];
     return selectedLibrary ? selectedLibrary.key : null;
   }

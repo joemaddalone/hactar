@@ -26,6 +26,7 @@ vi.mock('blessed', () => ({
   }),
   button: vi.fn(() => createMockWidget()),
   list: vi.fn(() => createMockWidget()),
+  form: vi.fn(() => createMockWidget()),
 }));
 
 const mockScreen = {
