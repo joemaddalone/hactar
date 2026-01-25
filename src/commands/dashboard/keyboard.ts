@@ -25,7 +25,17 @@ export function setupKeyboardControls(
 	// Drill-down navigation
 	screen.key(["enter"], () => {
 		const state = callbacks.getState();
-		if (state.activeModal) return; // Skip if modal is open
+		if (state.activeModal === 'scan') {
+			// Handle scan modal Enter key
+			callbacks.onScanModalEnter?.();
+			return;
+		}
+		if (state.activeModal === 'configure') {
+			// Handle configure modal Enter key
+			callbacks.onConfigureModalEnter?.();
+			return;
+		}
+		if (state.activeModal) return; // Skip if other modal is open
 		callbacks.onDrillDown();
 	});
 

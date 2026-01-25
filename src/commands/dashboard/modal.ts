@@ -182,6 +182,16 @@ export class ModalManager {
         }, 100);
       }
       
+      // Focus library list for scan modal
+      if (type === 'scan' && this.libraryList && typeof (this.libraryList as any).focus === 'function') {
+        setTimeout(() => {
+          (this.libraryList as any).focus();
+          if (this.screen) {
+            this.screen.render();
+          }
+        }, 100);
+      }
+      
       if (this.screen) {
         this.screen.render();
       }
@@ -373,13 +383,26 @@ export class ModalManager {
       border: { type: 'line' },
       style: {
         border: { fg: 'white' },
-        selected: { bg: 'blue' }
+        selected: { bg: 'blue' },
+        focus: { border: { fg: 'cyan' } }
       },
       label: ' Select Library ',
       items: ['Loading libraries...'],
       keys: true,
       vi: true,
+      mouse: true,
+      scrollable: true,
     });
+
+    // Focus the library list when modal is shown
+    if (this.libraryList && typeof (this.libraryList as any).focus === 'function') {
+      setTimeout(() => {
+        (this.libraryList as any).focus();
+        if (this.screen) {
+          this.screen.render();
+        }
+      }, 100);
+    }
 
     // Instructions
     blessed.box({

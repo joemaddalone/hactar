@@ -211,16 +211,70 @@ export class DashboardCommand extends BaseCommand {
           this.modalManager.showModal('configure');
         }
       },
-      onOpenScanModal: () => {
+      onOpenScanModal: async () => {
         this.openScanModal();
         if (this.screen) {
           this.modalManager.createModal(this.screen, 'scan');
           this.modalManager.showModal('scan');
+          
+          // Load libraries for the scan modal
+          await this.modalManager.loadLibraries(async () => {
+            const plexClient = new PlexClient();
+            const libraries = await plexClient.getLibraries();
+            return libraries.map(lib => ({ key: lib.key, title: lib.title }));
+          });
         }
       },
       onCloseModal: () => {
         this.closeModal();
         this.modalManager.hideModal();
+      },
+      onScanModalEnter: () => {
+        const selectedKey = this.modalManager.getSelectedLibraryKey();
+        if (selectedKey) {
+          setTimeout(async () => {
+            try {
+              const plexClient = new PlexClient();
+              const libraries = await plexClient.getLibraries();
+              const selectedLibrary = libraries.find(lib => lib.key === selectedKey);
+              
+              if (selectedLibrary) {
+                this.modalManager.showProgress('Scanning library...');
+                
+                // Use performScan from ScanCommand
+                const { ScanCommand } = await import('../scan');
+                const { Command } = await import('commander');
+                const scanCommand = new ScanCommand(new Command());
+                const results = await scanCommand.performScan(selectedLibrary);
+                
+                // Hide progress indicator
+                if ((this.modalManager as any).progressWidget) {
+                  (this.modalManager as any).progressWidget.hide();
+                  (this.modalManager as any).progressWidget = null;
+                }
+                
+                this.modalManager.showSuccess(`Scan completed! Found ${results.data.length} items`);
+                
+                setTimeout(async () => {
+                  this.closeModal();
+                  this.modalManager.hideModal();
+                  
+                  // Refresh dashboard data
+                  const { StorageClient } = await import('../../client/storage');
+                  await this.loadDashboardData(new StorageClient());
+                }, 2000);
+              }
+            } catch (error) {
+              // Hide progress indicator on error
+              if ((this.modalManager as any).progressWidget) {
+                (this.modalManager as any).progressWidget.hide();
+                (this.modalManager as any).progressWidget = null;
+              }
+              console.error('Scan error:', error);
+              this.modalManager.showErrors(['Scan failed: ' + (error as Error).message]);
+            }
+          }, 100);
+        }
       },
       getState: () => ({
         currentPage: this.currentPage,

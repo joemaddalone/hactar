@@ -73,10 +73,10 @@ export class ScanCommand extends BaseCommand {
 		return await plexClient.getLibraries();
 	}
 
-	public async performScan(library: PlexLibraryResponse): Promise<LibraryScanResult> {
+	public async performScan(library: PlexLibraryResponse, showSpinner: boolean = true): Promise<LibraryScanResult> {
 		const plexClient = new PlexClient();
 
-		const results = await plexClient.getLibraryItems(library as PlexLibraryResponse);
+		const results = await plexClient.getLibraryItems(library as PlexLibraryResponse, showSpinner);
 		const storageClient = new StorageClient();
 		await storageClient.saveLibrary(library.key, results);
 

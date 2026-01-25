@@ -95,9 +95,9 @@ export class PlexClient {
    * Get all items from a specific library
    */
   async getLibraryItems(
-    library: PlexLibraryResponse,
+    library: PlexLibraryResponse, showSpinner: boolean = true
   ): Promise<LibraryScanResult> {
-    const spinner = ora("Scanning Plex library...").start();
+    const spinner = showSpinner ? ora("Scanning Plex library...").start() : undefined;
     const response = await this.request<PlexResponse<PlexMovieResponse>>(
       `/library/sections/${library.key}/all`,
     );
@@ -175,7 +175,7 @@ export class PlexClient {
     }
 
     parentdata.humanBytes = bytesToHuman(parentdata.bytes);
-    spinner.stop();
+    spinner?.stop();
     return parentdata;
   }
 

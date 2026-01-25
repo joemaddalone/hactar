@@ -122,6 +122,8 @@ export interface KeyboardCallbacks {
 	onOpenConfigureModal: () => void;
 	onOpenScanModal: () => void;
 	onCloseModal: () => void;
+	onScanModalEnter?: () => void;
+	onConfigureModalEnter?: () => void;
 	getState: () => DashboardState;
 }
 
