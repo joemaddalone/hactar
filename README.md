@@ -8,7 +8,9 @@
 
 Hactar is a lightweight Node.js CLI for gathering and visualising storage information from Plex Media Server libraries. It lets you quickly see which shows, seasons, movies or entire libraries consume the most disk space, so you can clean up or archive files with confidence.
 
-<img width="1164" height="845" alt="Image" src="https://github.com/user-attachments/assets/3fea5ae0-b97a-41f4-ad64-6b21895547bf" />
+<img width="1240" height="1010" alt="Image" src="https://github.com/user-attachments/assets/21d7e713-e7a1-4a24-8da0-7e0e41ddb146" />
+<img width="1239" height="1010" alt="Image" src="https://github.com/user-attachments/assets/3b3762e9-73e5-43b7-bab2-411b76f2881e" />
+<img width="1236" height="1006" alt="Image" src="https://github.com/user-attachments/assets/451b2fa8-fe30-4e1f-b194-1a57a7436bc5" />
 
 ## 🔧 Prerequisites
 
