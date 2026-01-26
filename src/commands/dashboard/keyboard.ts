@@ -2,6 +2,7 @@ import type * as blessed from "blessed";
 import type { KeyboardCallbacks, SortColumn } from "./types";
 import { displayItemsConfig } from "./display-items-config";
 
+
 /**
  * Sets up keyboard controls for the dashboard
  */
@@ -9,20 +10,19 @@ export function setupKeyboardControls(
 	screen: blessed.Widgets.Screen,
 	callbacks: KeyboardCallbacks,
 ): void {
+
+	const keyResponseFactory = (keys: string[], callback: () => void) => {
+		screen.key(keys, () => {
+			const state = callbacks.getState();
+			if (state.activeModal) return; // Skip if modal is open
+			callback();
+		});
+	};
 	// Table navigation controls
-	screen.key(["up", "k"], () => {
-		const state = callbacks.getState();
-		if (state.activeModal) return; // Skip if modal is open
-		callbacks.onTableUp();
-	});
+	keyResponseFactory(["up", "k"], callbacks.onTableUp);
+	keyResponseFactory(["down", "j"], callbacks.onTableDown);
 
-	screen.key(["down", "j"], () => {
-		const state = callbacks.getState();
-		if (state.activeModal) return; // Skip if modal is open
-		callbacks.onTableDown();
-	});
-
-	// Drill-down navigation
+	// Enter key
 	screen.key(["enter"], () => {
 		const state = callbacks.getState();
 		if (state.activeModal === 'scan') {
@@ -36,22 +36,15 @@ export function setupKeyboardControls(
 			return;
 		}
 		if (state.activeModal) return; // Skip if other modal is open
+		// Drill-down navigation
 		callbacks.onDrillDown();
 	});
 
 	// Back navigation
-	screen.key(["backspace", "b"], () => {
-		const state = callbacks.getState();
-		if (state.activeModal) return; // Skip if modal is open
-		callbacks.onNavigateBack();
-	});
+	keyResponseFactory(["backspace", "b"], callbacks.onNavigateBack);
 
 	// Library cycling with Tab
-	screen.key(["tab"], () => {
-		const state = callbacks.getState();
-		if (state.activeModal) return; // Skip if modal is open
-		callbacks.onCycleLibrary();
-	});
+	keyResponseFactory(["tab"], callbacks.onCycleLibrary);
 
 	// Pagination controls
 	screen.key(["left", "a"], () => {
@@ -71,17 +64,9 @@ export function setupKeyboardControls(
 		}
 	});
 
-	screen.key(["home", "w"], () => {
-		const state = callbacks.getState();
-		if (state.activeModal) return; // Skip if modal is open
-		callbacks.onFirstPage();
-	});
+	keyResponseFactory(["home", "w"], callbacks.onFirstPage);
 
-	screen.key(["end"], () => {
-		const state = callbacks.getState();
-		if (state.activeModal) return; // Skip if modal is open
-		callbacks.onLastPage();
-	});
+	keyResponseFactory(["end"], callbacks.onLastPage);
 
 	// Sorting controls - determine sort column dynamically based on current view
 	const getSortColumn = (keyIndex: number): SortColumn => {
@@ -93,56 +78,21 @@ export function setupKeyboardControls(
 		return columns[keyIndex]?.key || columns[0].key;
 	};
 
-	screen.key(["1"], () => {
-		const state = callbacks.getState();
-		if (state.activeModal) return; // Skip if modal is open
-		callbacks.onSortByColumn(getSortColumn(0));
-	});
-
-	screen.key(["2"], () => {
-		const state = callbacks.getState();
-		if (state.activeModal) return; // Skip if modal is open
-		callbacks.onSortByColumn(getSortColumn(1));
-	});
-
-	screen.key(["3"], () => {
-		const state = callbacks.getState();
-		if (state.activeModal) return; // Skip if modal is open
-		callbacks.onSortByColumn(getSortColumn(2));
-	});
-
-	screen.key(["4"], () => {
-		const state = callbacks.getState();
-		if (state.activeModal) return; // Skip if modal is open
-		callbacks.onSortByColumn(getSortColumn(3));
-	});
+	// Sorting controls
+	keyResponseFactory(["1"], () => callbacks.onSortByColumn(getSortColumn(0)));
+	keyResponseFactory(["2"], () => callbacks.onSortByColumn(getSortColumn(1)));
+	keyResponseFactory(["3"], () => callbacks.onSortByColumn(getSortColumn(2)));
+	keyResponseFactory(["4"], () => callbacks.onSortByColumn(getSortColumn(3)));
 
 	// Toggle sort direction
-	screen.key(["r"], () => {
-		const state = callbacks.getState();
-		if (state.activeModal) return; // Skip if modal is open
-		callbacks.onToggleSortDirection();
-	});
+	keyResponseFactory(["r"], callbacks.onToggleSortDirection);
 
 	// Return to overall view (keeping 0 as shortcut)
-	screen.key(["0"], () => {
-		const state = callbacks.getState();
-		if (state.activeModal) return; // Skip if modal is open
-		callbacks.onReturnToOverall();
-	});
+	keyResponseFactory(["0"], callbacks.onReturnToOverall);
 
 	// Modal controls
-	screen.key(["c"], () => {
-		const state = callbacks.getState();
-		if (state.activeModal) return; // Skip if modal is already open
-		callbacks.onOpenConfigureModal();
-	});
-
-	screen.key(["s"], () => {
-		const state = callbacks.getState();
-		if (state.activeModal) return; // Skip if modal is already open
-		callbacks.onOpenScanModal();
-	});
+	keyResponseFactory(["c"], callbacks.onOpenConfigureModal);
+	keyResponseFactory(["s"], callbacks.onOpenScanModal);
 
 	screen.key(["escape"], () => {
 		callbacks.onCloseModal();
