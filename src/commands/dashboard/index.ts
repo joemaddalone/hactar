@@ -729,7 +729,7 @@ export class DashboardCommand extends BaseCommand {
       "",
       "Navigation:",
       "Tab: Switch library | ↑↓: Select item | Enter: Drill down | Backspace: Go back",
-      "←/→: Page | 1-4: Sort | R: Reverse | 0: Overall | Q: Quit",
+      "←/→ (a/d): Page | 1-4: Sort | r: Reverse | 0: Overall | q: Quit | c: Configure | s: Scan",
       canDrillDown
         ? `[${selectedItem.sourceType === "show" ? "→ Enter to view seasons" : "→ Enter to view episodes"}]`
         : "",
