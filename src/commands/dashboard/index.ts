@@ -14,6 +14,12 @@ import { ModalManager } from "./modal";
 import { DashboardModalIntegration } from "./dashboard-modal-integration";
 import { findSeasonByKey, findShowByKey, loadCachedData } from "./cached-data";
 import {
+  cycleLibrary,
+  drillDown,
+  navigateBack,
+  moveTableSelection,
+} from "./navigation";
+import {
   collectOverallItems,
   collectLibraryItems,
   collectSeasonItems,
@@ -298,120 +304,50 @@ export class DashboardCommand extends BaseCommand {
   }
 
   private cycleLibrary(): void {
-    const totalLibraries = this.cachedLibraryData.length + 1; // +1 for "All Libraries"
-    this.navigationState.libraryIndex =
-      (this.navigationState.libraryIndex + 1) % totalLibraries;
-
-    if (this.widgets?.libraryList) {
-      this.widgets.libraryList.select(this.navigationState.libraryIndex);
-    }
-
-    // Reset navigation state when switching libraries
-    this.navigationState.currentShow = undefined;
-    this.navigationState.currentSeason = undefined;
-
-    if (this.navigationState.libraryIndex === 0) {
-      this.displayItems("overall", this.cachedLibraryData);
-    } else {
-      const selectedLib =
-        this.cachedLibraryData[this.navigationState.libraryIndex - 1];
-      if (selectedLib?.data) {
-        this.displayItems("library", selectedLib.data);
-      }
-    }
+    cycleLibrary(
+      this.navigationState,
+      this.cachedLibraryData,
+      this.widgets,
+      (type, data) => this.displayItems(type, data),
+    );
   }
 
   private drillDown(): void {
-    if (this.currentItems.length === 0) return;
-
-    const selectedItem = this.currentItems[this.selectedTableIndex];
-    if (!selectedItem) return;
-
-    // Only shows and seasons can be drilled into
-    if (selectedItem.sourceType === "show") {
-      const show = findShowByKey(selectedItem.sourceKey, this.cachedLibraryData);
-      if (show) {
-        this.displayItems("show", show);
-      }
-    } else if (selectedItem.sourceType === "season") {
-      const season = findSeasonByKey(selectedItem.sourceKey, this.cachedLibraryData);
-      if (season) {
-        this.displayItems("season", season);
-      }
-    }
-    // Movies and episodes are leaf nodes - no drill-down
+    drillDown(
+      this.currentItems,
+      this.selectedTableIndex,
+      (key) => findShowByKey(key, this.cachedLibraryData),
+      (key) => findSeasonByKey(key, this.cachedLibraryData),
+      (type, data) => this.displayItems(type, data),
+    );
   }
 
   private navigateBack(): void {
-    switch (this.currentView) {
-      case "season":
-        // Go back to show view
-        if (this.navigationState.currentShow) {
-          this.displayItems("show", this.navigationState.currentShow);
-        }
-        break;
-      case "show":
-        // Go back to library view
-        if (this.navigationState.libraryIndex === 0) {
-          this.currentSortColumn = "size";
-          this.sortDirection = "desc";
-          this.displayItems("overall", this.cachedLibraryData);
-        } else {
-          const lib =
-            this.cachedLibraryData[this.navigationState.libraryIndex - 1];
-          if (lib?.data) {
-            this.currentSortColumn = "size";
-            this.sortDirection = "desc";
-            this.displayItems("library", lib.data);
-          }
-        }
-        break;
-      case "library":
-        // Go back to overall view
-        this.navigationState.libraryIndex = 0;
-        if (this.widgets?.libraryList) {
-          this.widgets.libraryList.select(0);
-        }
-        this.currentSortColumn = "size";
-        this.sortDirection = "desc";
-        this.displayItems("overall", this.cachedLibraryData);
-        break;
-      // "overall" is the root - can't go back further
-    }
+    navigateBack(
+      this.currentView,
+      this.navigationState,
+      this.cachedLibraryData,
+      this.widgets,
+      (type, data) => this.displayItems(type, data),
+      (column, direction) => {
+        this.currentSortColumn = column;
+        this.sortDirection = direction;
+      },
+    );
   }
 
   private moveTableSelection(delta: number): void {
-    const pageStart = (this.currentPage - 1) * this.itemsPerPage;
-    const pageEnd = Math.min(pageStart + this.itemsPerPage, this.totalItems);
-    const pageItemCount = pageEnd - pageStart;
+    const direction = delta < 0 ? "up" : "down";
+    this.selectedTableIndex = moveTableSelection(
+      this.widgets,
+      direction,
+      this.totalItems,
+      this.itemsPerPage,
+      this.selectedTableIndex,
+    );
 
-    if (pageItemCount === 0) return;
-
-    // Calculate new index within current page bounds
-    const currentPageIndex = this.selectedTableIndex - pageStart;
-    const newPageIndex = currentPageIndex + delta;
-
-    // Handle page boundaries
-    if (newPageIndex < 0) {
-      // Move to previous page if possible
-      if (this.currentPage > 1) {
-        this.currentPage--;
-        this.selectedTableIndex = this.currentPage * this.itemsPerPage - 1;
-      } else {
-        this.selectedTableIndex = pageStart; // Stay at first item
-      }
-    } else if (newPageIndex >= pageItemCount) {
-      // Move to next page if possible
-      const maxPage = Math.ceil(this.totalItems / this.itemsPerPage);
-      if (this.currentPage < maxPage) {
-        this.currentPage++;
-        this.selectedTableIndex = (this.currentPage - 1) * this.itemsPerPage;
-      } else {
-        this.selectedTableIndex = pageEnd - 1; // Stay at last item
-      }
-    } else {
-      this.selectedTableIndex = pageStart + newPageIndex;
-    }
+    // Update current page based on new index
+    this.currentPage = Math.floor(this.selectedTableIndex / this.itemsPerPage) + 1;
 
     this.refreshItemsTable();
     this.updateStatusLog();
@@ -503,9 +439,9 @@ export class DashboardCommand extends BaseCommand {
 
   private displayItems(
     type: ViewType,
-    libraryData: CachedLibraryData[] | Show | LibraryScanResult | Season,
+    libraryData: CachedLibraryData[] | Show | LibraryScanResult | Season | null,
   ) {
-    if (!this.widgets?.itemsTable) return;
+    if (!libraryData || !this.widgets?.itemsTable) return;
     type = type || "overall";
 
     switch (type) {
