@@ -6,16 +6,26 @@ interface StorageClientInterface {
 	getLibraryData(key: string): Promise<LibraryScanResult | null>;
 }
 
-export async function loadCachedData(storageClient: StorageClientInterface): Promise<CachedLibraryData[]> {
+export async function loadCachedData(storageClient: StorageClientInterface): Promise<{
+	cachedLibraryData: CachedLibraryData[];
+	totalSize: number;
+	totalFiles: number;
+}> {
 	// Get libraries from storage
 	const libraries = await storageClient.getLibraries();
 
 	if (!libraries || libraries.length === 0) {
-		return [];
+		return {
+			cachedLibraryData: [],
+			totalSize: 0,
+			totalFiles: 0,
+		};
 	}
 
 	// Load cached data for each library
 	const cachedLibraryData: CachedLibraryData[] = [];
+	let totalSize = 0;
+	let totalFiles = 0;
 
 	for (const lib of libraries) {
 		const data = await storageClient.getLibraryData(lib.key);
@@ -24,9 +34,18 @@ export async function loadCachedData(storageClient: StorageClientInterface): Pro
 			title: lib.libraryName || "Untitled",
 			data: data,
 		});
+
+		if (data) {
+			totalSize += data.bytes;
+			totalFiles += data.files;
+		}
 	}
 
-	return cachedLibraryData;
+	return {
+		cachedLibraryData,
+		totalSize,
+		totalFiles,
+	};
 }
 
 export function findShowByKey(key: string | undefined, cachedLibraryData: CachedLibraryData[]): Show | undefined {

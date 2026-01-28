@@ -3,8 +3,8 @@
 ## Current Work Focus
 
 - Hactar is a fully functional CLI tool for Plex media server storage analysis.
-- All core features are implemented and working: configuration, connection testing, library scanning, and TUI dashboard with integrated scan modal functionality.
-- The project is in a stable, production-ready state (v1.3.0) with complete hierarchical navigation, enhanced dashboard features, and seamless in-dashboard scanning capabilities.
+- All core features are implemented and working: configuration, connection testing, library listing, scanning, and TUI dashboard with integrated modal functionality.
+- The project is in a stable, production-ready state (v1.4.0) with modular dashboard architecture, complete hierarchical navigation, and centralized data loading logic.
 - Project is ready for distribution via npm with proper package configuration.
 
 ## Recent Changes
@@ -18,9 +18,11 @@
 - **Type Safety Improvements**: Eliminated all `any` types throughout the modal system by leveraging `@types/blessed` and implementing proper type assertions and interface definitions
 - **Code Quality**: Achieved zero lint warnings by replacing `as any` casts with proper type guards and method signatures
 - **Test Suite Maintenance**: Updated tests to reflect new `showSpinner` parameter and removed orphaned test files
-- **Dashboard Column Management Refactoring**: Consolidated column definitions and sorting logic into `display-items-config.ts`. Implemented dynamic column visibility (e.g., hiding "Episodes" for movie libraries) and renamed "Files" to "Episodes" throughout the dashboard.
-- **Hierarchical Navigation Completion**: Fully implemented drill-down from TV shows → seasons → episodes, including back-navigation and state management.
-- **Version Bump**: Updated to `v1.3.0` following the major dashboard refactoring and hierarchical navigation completion.
+- **Dashboard Data Loading Refactoring**: Centralized library data loading and totals calculation into `loadCachedData()` in `cached-data.ts`.
+  - Refactored `DashboardCommand` to use this unified function instead of manual fetching loop
+  - Improved code reusability and reduced duplication in `index.ts`
+  - Added comprehensive unit tests for `loadCachedData` with 100% coverage
+- **Version Bump**: Updated to `v1.4.0` following the dashboard data loading refactor and improved test coverage.
 
 ## Next Steps
 

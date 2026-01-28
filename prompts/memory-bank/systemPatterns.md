@@ -7,7 +7,7 @@ Hactar is a production-ready TypeScript-based Node.js CLI application with a cle
 - **CLI Entry Point (`src/index.ts`)**: Initializes the CLI with proper error handling and process management.
 - **Command Registry (`src/commands/index.ts`)**: Manages registration and execution of all Commander.js commands.
 - **Commands (`src/commands/*`)**: Complete command implementations including `configure`, `test`, `scan`, `dashboard`, and `help`.
-- **Dashboard Modules (`src/commands/dashboard/*`)**: Modular dashboard with dedicated files for types, layout, keyboard controls, sorting, views, and storage chart rendering.
+- **Dashboard Modules (`src/commands/dashboard/*`)**: Modular dashboard with dedicated files for types, layout, keyboard controls, sorting, views, storage chart rendering, and cached data loading.
 - **Plex Client (`src/client/plex.ts`)**: Full-featured communication with the Plex API including authentication and data retrieval.
 - **Storage Client (`src/client/storage.ts`)**: Handles data aggregation and storage calculations.
 - **Configuration Manager (`src/client/configure.ts`)**: Interactive configuration system with credential persistence.

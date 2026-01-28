@@ -12,7 +12,7 @@ import { sortItems } from "./sorting";
 import { updateStorageChart } from "./storage-chart";
 import { ModalManager } from "./modal";
 import { DashboardModalIntegration } from "./dashboard-modal-integration";
-import { findSeasonByKey, findShowByKey } from "./cached-data";
+import { findSeasonByKey, findShowByKey, loadCachedData } from "./cached-data";
 import {
   collectOverallItems,
   collectLibraryItems,
@@ -468,32 +468,14 @@ export class DashboardCommand extends BaseCommand {
     statusLog.setContent("Loading cached library data...");
 
     try {
-      // get libraries from storage
-      const libraries = await storageClient.getLibraries();
+      const { cachedLibraryData, totalSize, totalFiles } = await loadCachedData(storageClient);
 
-      if (!libraries || libraries.length === 0) {
+      if (cachedLibraryData.length === 0) {
         statusLog.setContent("No libraries found. Run 'hactar scan' first.");
         return;
       }
 
-      // Load cached data for each library
-      this.cachedLibraryData = [];
-      let totalSize = 0;
-      let totalFiles = 0;
-
-      for (const lib of libraries) {
-        const data = await storageClient.getLibraryData(lib.key);
-        this.cachedLibraryData.push({
-          key: lib.key,
-          title: lib.libraryName || "Untitled",
-          data: data,
-        });
-
-        if (data) {
-          totalSize += data.bytes;
-          totalFiles += data.files;
-        }
-      }
+      this.cachedLibraryData = cachedLibraryData;
 
       // Update library list with "All Libraries" option at the top
       libraryList.setItems([

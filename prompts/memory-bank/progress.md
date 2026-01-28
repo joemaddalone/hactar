@@ -26,7 +26,8 @@
 - **Improved Error Handling**: Enhanced user experience with helpful configuration offers instead of basic error messages.
 - **Help System**: Comprehensive help command with specific interfaces and examples.
 - **Build System**: Clean TypeScript compilation to CommonJS with proper error handling.
-- **Dashboard Modularization**: `dashboard.ts` refactored into focused modules in `src/commands/dashboard/` (index, layout, keyboard, sorting, views, storage-chart, display-items-config, modal) for better maintainability.
+- **Dashboard Modularization**: `dashboard.ts` refactored into focused modules in `src/commands/dashboard/` (index, layout, keyboard, sorting, views, storage-chart, display-items-config, modal, **cached-data**) for better maintainability.
+- **Centralized Data Loading**: Centralized library data fetching and totals calculation in `cached-data.ts`, reducing duplication and improving testability.
 - **Logging**: Styled terminal output with consistent formatting and error reporting.
 
 ## What's Left to Build
@@ -41,13 +42,13 @@
 
 ## Current Status
 
-- **Phase**: Production Ready (v1.3.0) - Stable Release with Integrated Scanning
-- **Status**: All core functionality implemented with complete hierarchical navigation, centralized column management, and fully functional scan modal integration.
+- **Phase**: Production Ready (v1.4.0) - Refactored Data Loading & Enhanced Stability
+- **Status**: All core functionality implemented with complete hierarchical navigation, centralized column management, and refactored dashboard data loading.
 - **Build Status**: ✅ Compiles successfully with TypeScript (tsc)
 - **Code Quality**: ✅ Zero lint warnings, complete type safety
-- **Test Status**: ✅ All 59 tests passing
+- **Test Status**: ✅ All 58 tests passing
 - **CLI Commands**: ✅ configure, test, scan, dashboard, help all functional
-- **Dashboard Features**: ✅ Dynamic multi-panel layout with paginated/sortable data display, full hierarchical navigation, and integrated scan modal
+- **Dashboard Features**: ✅ Dynamic multi-panel layout with paginated/sortable data display, full hierarchical navigation, and centralized data loading
 - **Modal System**: ✅ Keyboard-navigable scan modal with progress feedback and automatic refresh
 - **User Experience**: ✅ Intuitive keyboard controls, visual feedback, and domain-appropriate terminology ("Episodes")
 - **Distribution**: ✅ Ready for npm publishing with proper package configuration
