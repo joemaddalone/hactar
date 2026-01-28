@@ -12,6 +12,7 @@ import { sortItems } from "./sorting";
 import { updateStorageChart } from "./storage-chart";
 import { ModalManager } from "./modal";
 import { DashboardModalIntegration } from "./dashboard-modal-integration";
+import { findSeasonByKey, findShowByKey } from "./cached-data";
 import {
   collectOverallItems,
   collectLibraryItems,
@@ -328,12 +329,12 @@ export class DashboardCommand extends BaseCommand {
 
     // Only shows and seasons can be drilled into
     if (selectedItem.sourceType === "show") {
-      const show = this.findShowByKey(selectedItem.sourceKey);
+      const show = findShowByKey(selectedItem.sourceKey, this.cachedLibraryData);
       if (show) {
         this.displayItems("show", show);
       }
     } else if (selectedItem.sourceType === "season") {
-      const season = this.findSeasonByKey(selectedItem.sourceKey);
+      const season = findSeasonByKey(selectedItem.sourceKey, this.cachedLibraryData);
       if (season) {
         this.displayItems("season", season);
       }
@@ -416,28 +417,6 @@ export class DashboardCommand extends BaseCommand {
     this.updateStatusLog();
   }
 
-  private findShowByKey(key?: string): Show | undefined {
-    if (!key) return undefined;
-
-    for (const lib of this.cachedLibraryData) {
-      if (lib.data?.data) {
-        for (const item of lib.data.data) {
-          if (item.ratingKey === key && "seasons" in item) {
-            return item as Show;
-          }
-        }
-      }
-    }
-    return undefined;
-  }
-
-  private findSeasonByKey(key?: string): Season | undefined {
-    if (!key || !this.navigationState.currentShow) return undefined;
-
-    return this.navigationState.currentShow.seasons?.find(
-      (s) => s.ratingKey === key,
-    );
-  }
 
   private sortByColumn(column: SortColumn): void {
     if (column === "library" && this.currentView !== "overall") return;
